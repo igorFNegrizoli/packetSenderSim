@@ -1,7 +1,7 @@
 #include <iostream>
 #include <bitset>
 #include "udp.h"
-#include "toolbox.h"
+//#include "toolbox.h"
 
 using namespace std;
 
@@ -10,9 +10,10 @@ int main(){
     uint16_t* data_ = new uint16_t(2);
     data_[0] = 0x0002;
     data_[1] = 0x0003;
-    UdpPacket* pack = buildUdpPacket(srcPort_, dstPort_, length_, data_);
-    cout << hex << pack->srcPort << endl << pack->dstPort << endl << pack->length << endl << pack->data[0] << endl << pack->data[1] << endl << pack->checksum << endl;
-    cout << receiveUdpPacket(pack);
-
+    uint16_t* pack = buildUdpPacket(srcPort_, dstPort_, length_, data_);
+    for(uint16_t i=0; i<length_/2; ++i){
+    	cout << hex << pack[i] << endl;
+    }
+	injectErrorInPacket(pack, 1);
     return 0;
 }
