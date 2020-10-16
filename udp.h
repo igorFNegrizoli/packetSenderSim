@@ -1,6 +1,9 @@
 #include "toolbox.h"
 #include <iostream>
+#include <math.h>
+
 using namespace std;
+
 /*
 struct UdpPacket{
     uint16_t srcPort, dstPort, length, checksum;
@@ -116,6 +119,11 @@ uint16_t* buildUdpPacket(uint16_t srcPort_ = 0, uint16_t dstPort_ = 0, uint16_t 
     return packet;
 }
 
+uint16_t injectErrorInChunk(uint16_t chunk, uint16_t microPosition){
+    uint16_t auxiliary = pow(2,microPosition);
+    return (chunk ^ auxiliary);
+}
+
 uint16_t* injectErrorInPacket(uint16_t* packet, uint32_t errorQuantity = 1){
     bit16ErrorVec packageErrors[packet[2]/2];
     if(errorQuantity > (packet[2])*8) return nullptr;
@@ -155,8 +163,9 @@ uint16_t* injectErrorInPacket(uint16_t* packet, uint32_t errorQuantity = 1){
         }
         //cout << "-------" << endl << position << " : " << microPosition << endl <<"-------" << endl;
         //Agora que as posiçoes foram escolhidas, chama-se a funçao que altera o bit
-        //packet[position] = injectErrorInChunk(packet[position], microPosition);
+        packet[position] = injectErrorInChunk(packet[position], microPosition);
 
     }
-    return 0;
+    return packet;
 }
+
