@@ -59,32 +59,52 @@ uint16_t* pureRandomModel(uint16_t* packet, uint32_t errorQuantity = 1){
 
 //The following implementations are based in the description given in this paper
 //https://www.cister.isep.ipp.pt/docs/bit_error_models/369/view.pdf
-uint16_t* gilbertElliotModel(uint16_t* packet, uint16_t Tb, uint16_t Tg){
+uint16_t* gilbertElliotModel(uint16_t* packet, uint16_t TbAux, uint16_t TgAux){
 	//Tb and Tg stands for the mean duration of the bad burst and the good burst respectively. Tb= mean of the length of error bursts
+	double Tb = TbAux, Tg = TgAux;
+	double Pgg = Tg/(Tg+Tb);
 	double Pbb = Tb/(Tg+Tb);
-	double Pgb = 1 - Pbb;
-	uint16_t length = packet[2]*8;
-	bool errorVec[length] = {0};
-
-	//Considerei o bit da posição -1 (que não existe) como correto
-	errorVec[0] = trueFalseProb(Pgb);
-	//Cada bit percorrido se baseia no bit anterior para calcular a probabilidade de ativar o bit i do vetor de erros
-	for(uint32_t i=1; i<length; ++i){
-		if(errorVec[i-1] == false){
-			errorVec[i] = trueFalseProb(Pbb);
-		}else{
-			errorVec[i] = trueFalseProb(Pgb);
-		}
-	}
-
-	//Injeta os erros de acordo com o errorVec. Importante lembrar que bit 0 do primeiro pacote é representado pelo errorVec[15] e o bit 15 pelo errorVec[0]
-	for(uint16_t i=0; i<(length/16); ++i){
-		uint32_t posInError = i*16;
-		for(uint16_t j=15; j>=0; --j){
-			if(errorVec[posInError + j] == true){
-				packet[i] = injectErrorInChunk(packet[i], 15-j);
+	uint16_t length = packet[2];
+	bool state = true;//good state
+	//cout << Pgg << "  " << Pbb << endl;
+	for(uint32_t i=0; i<length/2; ++i){
+		for(uint16_t pos=15; pos<16; --pos){
+			if(state == true){
+				if(trueFalseProb(Pgg)){
+					state = true;
+				}else{
+					packet[i] = injectErrorInChunk(packet[i], pos);
+					cout << i << " : " << pos << endl;
+					state = false;
+				}
+			}else{
+				if(trueFalseProb(Pbb)){
+					packet[i] = injectErrorInChunk(packet[i], pos);
+					cout << i << " : " << pos << endl;
+					state = false;
+				}else{
+					state = true;
+				}
 			}
 		}
 	}
+	
 	return packet;
 }
+
+uint16_t* bernoulliModel(uint16_t* packet, double BER){
+	uint16_t length = packet[2], errCount = 0;
+	double Perr = 1 - pow((1-BER),length*8);
+	cout << Perr << endl;
+	for(uint16_t i = 0; i<length/2; ++i){
+		for(uint16_t j = 0; j<16; ++j){
+			if(trueFalseProb(Perr) == true){
+				packet[i] = injectErrorInChunk(packet[i], j);
+				++errCount;
+			}
+		}
+	}
+	cout << errCount << " errors occurred" << endl;
+	return packet;	
+}
+
