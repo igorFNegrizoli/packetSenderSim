@@ -66,7 +66,7 @@ uint16_t* gilbertElliotModel(uint16_t* packet, uint16_t TbAux, uint16_t TgAux){
 	double Pbb = Tb/(Tg+Tb);
 	uint16_t length = packet[2];
 	bool state = true;//good state
-	//cout << Pgg << "  " << Pbb << endl;
+	cout << Pgg << "  " << Pbb << endl<<endl;
 	for(uint32_t i=0; i<length/2; ++i){
 		for(uint16_t pos=15; pos<16; --pos){
 			if(state == true){
@@ -88,7 +88,6 @@ uint16_t* gilbertElliotModel(uint16_t* packet, uint16_t TbAux, uint16_t TgAux){
 			}
 		}
 	}
-	
 	return packet;
 }
 
