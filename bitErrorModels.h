@@ -59,14 +59,13 @@ uint16_t* pureRandomModel(uint16_t* packet, uint32_t errorQuantity = 1){
 
 //The following implementations are based in the description given in this paper
 //https://www.cister.isep.ipp.pt/docs/bit_error_models/369/view.pdf
-uint16_t* gilbertElliotModel(uint16_t* packet, uint16_t TbAux, uint16_t TgAux){
+uint16_t* simplifiedGilbertElliotModel(uint16_t* packet, uint16_t TbAux, uint16_t TgAux){
 	//Tb and Tg stands for the mean duration of the bad burst and the good burst respectively. Tb= mean of the length of error bursts
 	double Tb = TbAux, Tg = TgAux;
 	double Pgg = Tg/(Tg+Tb);
 	double Pbb = Tb/(Tg+Tb);
 	uint16_t length = packet[2];
 	bool state = true;//good state
-	cout << Pgg << "  " << Pbb << endl<<endl;
 	for(uint32_t i=0; i<length/2; ++i){
 		for(uint16_t pos=15; pos<16; --pos){
 			if(state == true){
@@ -92,18 +91,24 @@ uint16_t* gilbertElliotModel(uint16_t* packet, uint16_t TbAux, uint16_t TgAux){
 }
 
 uint16_t* bernoulliModel(uint16_t* packet, double BER){
-	uint16_t length = packet[2], errCount = 0;
-	double Perr = 1 - pow((1-BER),length*8);
-	cout << Perr << endl;
+	uint16_t length = packet[2];
 	for(uint16_t i = 0; i<length/2; ++i){
 		for(uint16_t j = 0; j<16; ++j){
-			if(trueFalseProb(Perr) == true){
+			if(trueFalseProb(BER) == true){
 				packet[i] = injectErrorInChunk(packet[i], j);
-				++errCount;
 			}
 		}
 	}
-	cout << errCount << " errors occurred" << endl;
 	return packet;	
 }
 
+uint16_t burstErrorPeriodicModel(double burstBER, uint16_t meanLength){
+	uint16_t i, pos;
+	for(i=0; i<length/2; ++i){
+		for(pos=15; pos<16; --pos){
+			if(trueFalseProb(burstBER)){
+				
+			}
+		}
+	}
+}
