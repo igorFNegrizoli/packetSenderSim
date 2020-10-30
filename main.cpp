@@ -18,13 +18,14 @@ int main(){
     }
     cout << endl;
 
-	pack = gilbertElliotModel(pack, 4, 16);
+    uint16_t Tmin = 10, Tmax = 16, Nmin = 2, Nmax = 5;
+	pack = burstErrorPeriodicModel(pack, Tmin, Tmax, Nmin, Nmax);
 	cout << endl;
 
 	for(uint16_t i=0; i<length_/2; ++i){
     	cout << bitset<16>(pack[i]) << " ";
     }
     cout << endl;
-    
+
     return 0;
 }
