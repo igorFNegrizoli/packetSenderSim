@@ -26,7 +26,7 @@ uint16_t periodicBurstTest(uint16_t nIter, uint16_t pLen){
 		pack = constructRandomPacket(pLen);
 		pack = burstErrorPeriodicModel(pack, Tmin, Tmax, Nmin, Nmax);
 		flag = receiveUdpPacket(pack, pLen);
-		delete pack;
+		delete[] pack;
 		if(flag == true) ++goodCount; else ++badCount;
 	}
 	cout << "Erros detectados: " << badCount << endl <<"Erros nao detectados: " << goodCount << endl;

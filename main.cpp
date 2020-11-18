@@ -1,14 +1,19 @@
 #include <iostream>
 #include <bitset>
 //#include "toolbox.h"
-#include "udp.h"
-#include "bitErrorModels.h"
+//#include "udp.h"
+//#include "bitErrorModels.h"
+#include "efectivityTests.h"
 
 using namespace std;
 
 int main(){
-	
-    uint16_t srcPort_ = 0xfff0, dstPort_ = 0x000f, length_ = 0x000c;
+
+	periodicBurstTest(1000, 26);
+}
+
+/*
+	uint16_t srcPort_ = 0xfff0, dstPort_ = 0x000f, length_ = 0x000c;
     uint16_t* data_ = new uint16_t(2);
     data_[0] = 0x0002;
     data_[1] = 0x0003;
@@ -26,6 +31,5 @@ int main(){
     	cout << bitset<16>(pack[i]) << " ";
     }
     cout << endl;
-
-    return 0;
-}
+*/
+	
