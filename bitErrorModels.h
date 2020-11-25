@@ -15,7 +15,7 @@ uint16_t injectErrorInChunk(uint16_t chunk, uint16_t microPosition){
 
 //Injeta "errorQuantity" erros no pacote em posições aleatórias
 //Inject "errorQuantity" errors in random positions of packet
-uint16_t* pureRandomModel(uint16_t* packet, uint32_t errorQuantity = 1, limit = 30){
+uint16_t* pureRandomModel(uint16_t* packet, uint32_t errorQuantity = 1, uint16_t limit = 30){
 
     bit16ErrorVec packageErrors[packet[2]/2];
     if(errorQuantity > (packet[2])*8) return nullptr;
@@ -87,13 +87,13 @@ uint16_t* simplifiedGilbertElliotModel(uint16_t* packet, uint16_t TbAux, uint16_
 					state = true;
 				}else{
 					packet[i] = injectErrorInChunk(packet[i], pos);
-					cout << i << " : " << pos << endl;
+					//cout << i << " : " << pos << endl;
 					state = false;
 				}
 			}else{
 				if(trueFalseProb(Pbb)){
 					packet[i] = injectErrorInChunk(packet[i], pos);
-					cout << i << " : " << pos << endl;
+					//cout << i << " : " << pos << endl;
 					state = false;
 				}else{
 					state = true;

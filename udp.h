@@ -1,4 +1,3 @@
-#include "toolbox.h"
 #include <iostream>
 #include <math.h>
 
@@ -6,11 +5,11 @@ using namespace std;
 
 //Implementação mais concisa, legivel e rápida que a a versão anterior de 100+ linhas
 
-uint16_t doChecksum(uint16_t* packet = nullptr){
-
+uint16_t doChecksum(uint16_t* packet = nullptr, uint16_t len = 0){
+    if(len==0) len = packet[2];
     uint32_t checksum_ = 0x00000000; //variavel de 32 bits para que seja possivel detectar o bit de carry
     uint16_t checksum = 0;
-    for(int i=0; i < packet[2]/2; i++){
+    for(int i=0; i < len/2; i++){
         checksum_ += packet[i];
         //if para detecção do bit de carry
         if ((0xffff0000 & checksum_) != 0x00000000){
@@ -22,9 +21,10 @@ uint16_t doChecksum(uint16_t* packet = nullptr){
     return checksum;
 }
 
-bool receiveUdpPacket(uint16_t* packet=nullptr){
+bool receiveUdpPacket(uint16_t* packet=nullptr, uint16_t len = 0){
+    if(len==0) len = packet[2];
     uint16_t chc;
-    chc = doChecksum(packet);
+    chc = doChecksum(packet, len);
     if(chc + packet[3] != 0xffff){
         return false;
     }
