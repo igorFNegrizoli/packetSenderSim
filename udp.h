@@ -16,7 +16,9 @@ class udpPacket{
         void setChecksum(uint16_t a);
         bool verifyChecksum();
         void setChecksum();
-        void printPacket();
+        void printPacket(char mode);
+        void injectErrorInChunk(uint16_t pos, uint16_t microPosition);
+        void bernoulliModel(double BER);
         ~udpPacket();
 };
 

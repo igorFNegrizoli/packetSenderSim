@@ -2,6 +2,7 @@
 #include "toolbox.h"
 #include <iostream>
 #include <cstdint>
+#include <bitset>
 
 using namespace std;
 
@@ -61,11 +62,38 @@ bool udpPacket::verifyChecksum(){
     }
 }
 
-void udpPacket::printPacket(){
+void udpPacket::printPacket(char mode){
     cout << hex << "len: " << this->length << hex << " checksum: " << this->checksum << endl;
-    for(int i=0;i<(this->length/2);++i){
-        cout << hex << this->packet[i] << " ";
+    switch(mode){
+        case 'h':
+            for(int i=0;i<(this->length/2);++i) cout << hex << this->packet[i] << " ";
+        case 'b':
+            for(int i=0;i<(this->length/2);++i) cout << bitset<16>(this->packet[i]) << " ";
     }
+    cout << endl;
+}
+
+//Flippa o bit na posição "microPosition" da palavra de posicao "pos" do packet
+//Flips the "microPosition" bit of the word in "pos" of packet
+void udpPacket::injectErrorInChunk(uint16_t pos, uint16_t microPosition){
+    if(pos >= 16) cout << "warning: pos >= in injectErrorInChunk" << endl;
+    uint16_t auxiliary = pow(2,microPosition);
+    this->packet[pos] = (this->packet[pos] ^ auxiliary);
+}
+
+//Modelo de bernoulli descrito no artigo citado
+//Bernoulli model mentioned in the said article
+void udpPacket::bernoulliModel(double BER){
+    uint16_t cont = 0;
+    for(uint16_t i = 0; i<this->length/2; ++i){
+        for(uint16_t j = 0; j<16; ++j){
+            if(trueFalseProb(BER) == true){
+                this->injectErrorInChunk(i, j);
+                cont++;
+            }
+        }
+    }
+    cout << dec << cont << endl;
 }
 
 udpPacket::~udpPacket(){
