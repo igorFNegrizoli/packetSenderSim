@@ -40,6 +40,29 @@ udpPacket::udpPacket(uint16_t len){
     this->packet = packet_;
 }
 
+/*
+Esse construtor tem o proposito de auxiliar a visualização dos efeitos dos modelos
+de erro apenas
+
+This constructor's purpose is to hel visualize the effects of the error models only
+*/
+udpPacket::udpPacket(uint16_t len, bool zeroOrOne){
+    this->length = len;
+    uint16_t* packet_ = new uint16_t(len/2);
+    if (zeroOrOne){
+        for(uint16_t i=0; i<len/2; ++i){
+            packet_[i] = 0xffff;
+        }    
+    }else{
+        for(uint16_t i=0; i<len/2; ++i){
+            packet_[i] = 0;
+        }
+    }
+    
+    this->checksum = packet_[3];
+    this->packet = packet_;
+}
+
 uint16_t udpPacket::getLength(){
     return this->length;
 }
@@ -81,19 +104,49 @@ void udpPacket::injectErrorInChunk(uint16_t pos, uint16_t microPosition){
     this->packet[pos] = (this->packet[pos] ^ auxiliary);
 }
 
+//As seguintes implementações foram baseadas na descrição dada nesse paper www.cister.isep.ipp.pt/docs/bit_error_models/369/view.pdf
+//The following implementations are based in the description given in this paper www.cister.isep.ipp.pt/docs/bit_error_models/369/view.pdf
+
 //Modelo de bernoulli descrito no artigo citado
 //Bernoulli model mentioned in the said article
 void udpPacket::bernoulliModel(double BER){
-    uint16_t cont = 0;
     for(uint16_t i = 0; i<this->length/2; ++i){
         for(uint16_t j = 0; j<16; ++j){
             if(trueFalseProb(BER) == true){
                 this->injectErrorInChunk(i, j);
-                cont++;
             }
         }
     }
-    cout << dec << cont << endl;
+}
+
+//Funcionamento do algoritmo está descrito no item 4 do paper citado no comentario da implementação do modelo de Gilbert-Elliot
+//How the algorithm works is described at the previous mentioned article
+void udpPacket::burstErrorPeriodicModel(int16_t Tmin, uint16_t Tmax, uint16_t Nmin, uint16_t Nmax){
+    // Usar Tmin > 0 e Nmin > 0     Para um threshold(T) ou burstLength(N) de tamanho fixo, usar Tmin = Tmax e Nmin = Nmax
+    // Use Tmin > 0 e Nmin > 0      For a fixed length threshold(T) or burstLength(N), use Tmin = Tmax and Nmin = Nmax
+    uint16_t i, pos; //T -> threshold, N -> burst length
+    uint16_t threshold, eLength;
+    uint16_t accumulator = 0;
+
+    threshold = randomIntInterval(Tmin, Tmax);
+    eLength = randomIntInterval(Nmin, Nmax);
+    accumulator += threshold;
+
+    for(i=0; i<this->length/2; ++i){
+        for(pos=15; pos<16; --pos){
+            if(eLength > 0){
+                this->injectErrorInChunk(i, pos);
+                --eLength;
+            }
+            --threshold;
+
+            if(threshold == 0){
+                threshold = randomIntInterval(Tmin, Tmax);
+                eLength = randomIntInterval(Nmin, Nmax);
+                accumulator += threshold;
+            }
+        }
+    }
 }
 
 udpPacket::~udpPacket(){
