@@ -1,10 +1,13 @@
-#include "udp.h"
+#include "testbench.h"
+#include <iostream>
+
+using namespace std;
 
 int main(){
 
-	udpPacket pkg(8);
-    pkg.printPacket('b');
-    pkg.bernoulliModel(0.3);
-    pkg.printPacket('b');
+	testBench testes;
+	uint16_t count;
+	count = testes.doTest();
+	cout << count << endl;
     return 0;
 }
