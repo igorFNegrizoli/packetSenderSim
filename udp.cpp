@@ -42,9 +42,10 @@ udpPacket::udpPacket(uint16_t len){
 
 /*
 Esse construtor tem o proposito de auxiliar a visualização dos efeitos dos modelos
-de erro apenas
+de erro apenas. Constroi um pacote com apenas zeros ou apenas uns
 
-This constructor's purpose is to hel visualize the effects of the error models only
+This constructor's purpose is to hel visualize the effects of the error models only.
+Constructs a packet with only zeroes or only ones.
 */
 udpPacket::udpPacket(uint16_t len, bool zeroOrOne){
     this->length = len;
