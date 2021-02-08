@@ -5,6 +5,9 @@
 //Implementação em classes mais concisa e legivel que a a versão anterior
 
 class udpPacket{
+        /*The length field is used to store the original length in the case the len field is modified
+        by the error model. The checksum field also stores only the original checksum, the
+        */
         uint16_t length, checksum;
         uint16_t* packet;
     public:
