@@ -7,7 +7,7 @@ using namespace std;
 
 testBench::testBench(){
 	detectionFails = 0;
-	totalPackets = 10;
+	totalPackets = 100;
 	len = 8;
 	protocol = "udp";
 }
@@ -23,8 +23,13 @@ uint16_t testBench::doTest(){
 	bool errorFlag;
 	for(uint16_t i=0; i<this->totalPackets; ++i){
 		udpPacket pkg(this->len);
+		//pkg.printPacket('h');
 		pkg.bernoulliModel(0.1);
-		if(errorFlag) ++this->detectionFails;
+		//pkg.printPacket('h');
+		if(pkg.verifyChecksum()){
+			++this->detectionFails;
+			pkg.printPacket('b');
+		}
 	}
 	return this->detectionFails;
 }
