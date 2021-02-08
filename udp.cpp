@@ -79,11 +79,7 @@ void udpPacket::setChecksum(){
 
 bool udpPacket::verifyChecksum(){
     uint16_t chc = doChecksum(this->packet, this->length);
-    if((chc + this->checksum) == 0xffff){
-        return true;
-    }else{
-        return false;
-    }
+    return(chc == 0xffff);
 }
 
 void udpPacket::printPacket(char mode){
@@ -91,8 +87,10 @@ void udpPacket::printPacket(char mode){
     switch(mode){
         case 'h':
             for(int i=0;i<(this->length/2);++i) cout << hex << this->packet[i] << " ";
+                break;
         case 'b':
             for(int i=0;i<(this->length/2);++i) cout << bitset<16>(this->packet[i]) << " ";
+            break;
     }
     cout << endl;
 }
