@@ -1,2 +1,2 @@
-make: *.cpp
+hello:
 	g++ *.cpp -o exec

@@ -1,5 +1,5 @@
-#ifndef UDP_H_INCLUDED
-#define UDP_H_INCLUDED
+#ifndef UDP_HPP_INCLUDED
+#define UDP_HPP_INCLUDED
 #include <cstdint>
 
 //Implementação em classes mais concisa e legivel que a a versão anterior

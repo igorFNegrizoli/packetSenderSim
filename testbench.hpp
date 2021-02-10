@@ -1,5 +1,5 @@
-#ifndef TESTBENCH_H_INCLUDED
-#define TESTBENCH_H_INCLUDED
+#ifndef TESTBENCH_HPP_INCLUDED
+#define TESTBENCH_HPP_INCLUDED
 #include <cstdint>
 #include <string>
 
