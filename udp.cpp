@@ -98,7 +98,7 @@ void udpPacket::printPacket(char mode){
 //Flippa o bit na posição "microPosition" da palavra de posicao "pos" do packet
 //Flips the "microPosition" bit of the word in "pos" of packet
 void udpPacket::injectErrorInChunk(uint16_t pos, uint16_t microPosition){
-    if(pos >= 16) cout << "warning: pos >= in injectErrorInChunk" << endl;
+    if(microPosition >= 16) cout << "warning: pos >= in injectErrorInChunk" << endl;
     uint16_t auxiliary = pow(2,microPosition);
     this->packet[pos] = (this->packet[pos] ^ auxiliary);
 }
@@ -109,12 +109,17 @@ void udpPacket::injectErrorInChunk(uint16_t pos, uint16_t microPosition){
 //Modelo de bernoulli descrito no artigo citado
 //Bernoulli model mentioned in the said article
 void udpPacket::bernoulliModel(double BER){
-    for(uint16_t i = 0; i<this->length/2; ++i){
-        for(uint16_t j = 0; j<16; ++j){
-            if(trueFalseProb(BER) == true){
-                this->injectErrorInChunk(i, j);
+    bool wasPacketModified = false;
+    while(!wasPacketModified){
+    //This loop's purpose is to ensure the packet has at least one error
+        for(uint16_t i = 0; i<this->length/2; ++i){
+            for(uint16_t j = 0; j<16; ++j){
+                if(trueFalseProb(BER) == true){
+                    wasPacketModified = true;
+                    this->injectErrorInChunk(i, j);
+                }
             }
-        }
+        }    
     }
 }
 
@@ -143,6 +148,52 @@ void udpPacket::burstErrorPeriodicModel(int16_t Tmin, uint16_t Tmax, uint16_t Nm
                 threshold = randomIntInterval(Tmin, Tmax);
                 eLength = randomIntInterval(Nmin, Nmax);
                 accumulator += threshold;
+            }
+        }
+    }
+}
+
+//Funcionamento do algoritmo está descrito no item 3 do paper citado anteriormente
+//How the algorithm works is described at the previous mentioned article
+void udpPacket::gilbertModel(uint16_t burst, double plRate){
+    //q e p representam a probabilidade de passar para o estado bom e para o estado ruim respectivamente
+    //q e p represents the probability of going to qhe good state and the bad state respectively
+
+    //para calcular a probabilidade de uma rajada de tamanho k acontecer usa-se pk=q(1-q)^(k-1)
+    //to calculate the probability of a burst error occurring pk=q(1-q)^(k-1)
+
+    //calculos de p e q realizados conforme Yu, X. & Modestino, J (2008)
+    //p and q calculation according to Yu, X. & Modestino, J, (2008)
+
+    double q = (1/burst);
+    double p = (q*plRate)/(1-plRate);
+
+    bool state = true;//good state
+
+    bool wasPacketModified = false;
+    while(!wasPacketModified){
+    //This loop's purpose is to ensure the packet has at least one error
+        for(uint16_t i=0; i<this->length/2; ++i){
+            for(uint16_t pos=15; pos<16; --pos){
+                if(state == true){
+                    if(trueFalseProb(1-p)){
+                        state = true;
+                    }else{
+                        this->injectErrorInChunk(i, pos);
+                        wasPacketModified = true;
+                        //cout << i << " : " << pos << endl;
+                        state = false;
+                    }
+                }else{
+                    if(trueFalseProb(1-q)){
+                        this->injectErrorInChunk(i, pos);
+                        wasPacketModified = true;
+                        //cout << i << " : " << pos << endl;
+                        state = false;
+                    }else{
+                        state = true;
+                    }
+                }
             }
         }
     }

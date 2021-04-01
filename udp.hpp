@@ -24,6 +24,7 @@ class udpPacket{
         void injectErrorInChunk(uint16_t pos, uint16_t microPosition);
         void bernoulliModel(double BER);
         void burstErrorPeriodicModel(int16_t Tmin, uint16_t Tmax, uint16_t Nmin, uint16_t Nmax);
+        void gilbertModel(uint16_t burst, double plRate);
         ~udpPacket();
 };
 
