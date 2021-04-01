@@ -1,3 +1,5 @@
+#ifndef TOOLBOX_HPP_INCLUDED
+#define TOOLBOX_HPP_INCLUDED
 #include <stdlib.h>
 #include <time.h>
 #include <random>
@@ -25,3 +27,5 @@ uint16_t randomIntInterval(uint16_t a, uint16_t b){
     std::uniform_int_distribution<> distr(a, b); // define the range
 	return distr(gen);
 }
+
+#endif
