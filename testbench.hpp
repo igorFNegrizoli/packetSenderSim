@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 
+
 using namespace std;
 
 
@@ -14,11 +15,12 @@ able to work with other protocols
 */
 
 class testBench{
-        uint16_t detectionFails, totalPackets, len;
+        uint16_t detectionFails, len;
+        uint64_t totalPackets;
         string protocol;
     public:
         testBench();
-        testBench(string protocol_, uint16_t totalPackets_, uint16_t len);
+        testBench(string protocol_, uint64_t totalPackets_, uint16_t len);
         uint16_t doTest();
         ~testBench();
 };
