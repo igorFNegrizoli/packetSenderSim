@@ -3,8 +3,7 @@
 #include <iostream>
 #include <cstdint>
 #include <bitset>
-
-using namespace std;
+//#include <iomanip>
 
 uint16_t doChecksum(uint16_t* packet, uint16_t length){
     uint32_t checksum_ = 0x00000000; //variavel de 32 bits para que seja possivel detectar o bit de carry
@@ -83,22 +82,22 @@ bool udpPacket::verifyChecksum(){
 }
 
 void udpPacket::printPacket(char mode){
-    cout << hex << "len: " << this->length << hex << " checksum: " << this->checksum << endl;
+    std::cout << std::hex << "len: " << this->length << std::hex << " checksum: " << this->checksum << std::endl;
     switch(mode){
         case 'h':
-            for(int i=0;i<(this->length/2);++i) cout << hex << this->packet[i] << " ";
+            for(int i=0;i<(this->length/2);++i) std::cout << std::hex << this->packet[i] << " ";
                 break;
         case 'b':
-            for(int i=0;i<(this->length/2);++i) cout << bitset<16>(this->packet[i]) << " ";
+            for(int i=0;i<(this->length/2);++i) std::cout << std::bitset<16>(this->packet[i]) << " ";
             break;
     }
-    cout << endl;
+    std::cout << std::endl;
 }
 
 //Flippa o bit na posição "microPosition" da palavra de posicao "pos" do packet
 //Flips the "microPosition" bit of the word in "pos" of packet
 void udpPacket::injectErrorInChunk(uint16_t pos, uint16_t microPosition){
-    if(microPosition >= 16) cout << "warning: pos >= in injectErrorInChunk" << endl;
+    if(microPosition >= 16) std::cout << "warning: pos >= in injectErrorInChunk" << std::endl;
     uint16_t auxiliary = pow(2,microPosition);
     this->packet[pos] = (this->packet[pos] ^ auxiliary);
 }
@@ -165,8 +164,9 @@ void udpPacket::gilbertModel(uint16_t burst, double plRate){
     //calculos de p e q realizados conforme Yu, X. & Modestino, J (2008)
     //p and q calculation according to Yu, X. & Modestino, J, (2008)
 
-    double q = (1/burst);
-    double p = (q*plRate)/(1-plRate);
+    double q = double(1)/burst;
+    double p = double(q*plRate)/(1-plRate);
+    //std::cout << std::fixed << std::setprecision(7) << "p: " << p << " q: " << q << std::endl;
 
     bool state = true;//good state
 
@@ -181,14 +181,14 @@ void udpPacket::gilbertModel(uint16_t burst, double plRate){
                     }else{
                         this->injectErrorInChunk(i, pos);
                         wasPacketModified = true;
-                        //cout << i << " : " << pos << endl;
+                        //std::cout << i << " : " << pos << std::endl;
                         state = false;
                     }
                 }else{
                     if(trueFalseProb(1-q)){
                         this->injectErrorInChunk(i, pos);
                         wasPacketModified = true;
-                        //cout << i << " : " << pos << endl;
+                        //std::cout << i << " : " << pos << std::endl;
                         state = false;
                     }else{
                         state = true;
