@@ -1,9 +1,6 @@
 #include "testbench.hpp"
 #include <iostream>
 
-
-using namespace std;
-
 int main(){
 
 	cout << "Executando testes" << endl;
@@ -11,11 +8,12 @@ int main(){
 	testBench testes;
 	uint16_t count, nTestes = 10;
 	for(uint16_t i=0; i<nTestes; ++i){
+		//std::cout << i << " ";	
 		count = testes.doTest();
-		cout << count << ", ";	
+		std::cout << count << ", ";	
 	}
 
-	cout << endl;
+	std::cout << endl;
 	
 
 	/*
