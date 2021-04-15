@@ -1,5 +1,5 @@
 #include "packet.hpp"
-#include "toolbox.hpp"
+//#include "toolbox.hpp"
 #include <iostream>
 #include <cstdint>
 #include <bitset>
@@ -12,7 +12,7 @@ packet::packet(){
 }
 
 packet::packet(uint16_t len){
-    std::cout << "salve";
+    /*
     this->length = len;
     uint16_t* packet_ = new uint16_t(len/2);
     for(uint16_t i=0; i<len/2; ++i){
@@ -20,9 +20,10 @@ packet::packet(uint16_t len){
     }
     packet_[3] = 0x0000;
     packet_[2] = len;
-    //packet_[3] = ~this->doChecksum(packet_, len);
-    //this->checksum = packet_[3];
+    packet_[3] = ~this->doChecksum(packet_, len);
+    this->checksum = packet_[3];
     this->packetData = packet_;
+    */
 }
 
 /*

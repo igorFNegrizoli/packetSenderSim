@@ -28,6 +28,7 @@ class packet{
         void gilbertModel(uint16_t burst, double plRate);
 
         virtual uint16_t doChecksum(uint16_t* packet, uint16_t length){
+            
             return 0;
         }
 

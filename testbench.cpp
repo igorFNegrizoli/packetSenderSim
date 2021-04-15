@@ -1,5 +1,5 @@
 #include "testbench.hpp"
-#include "udp.hpp"
+#include "packet.hpp"
 //#include <string>
 //#include <iostream>
 //#include <fstream>
@@ -10,7 +10,7 @@
 testBench::testBench(){
 	detectionFails = 0;
 	totalPackets = 1000;
-	len = 128;
+	len = 8;
 	protocol = "udp";
 }
 
@@ -28,7 +28,7 @@ uint16_t testBench::doTest(){
 	double plRate = 0.07;
 
 	for(uint64_t i=0; i<this->totalPackets; ++i){
-		udpPacket pkg(this->len);
+		packet pkg(this->len);
 		//pkg.printPacket('h');
 		pkg.gilbertModel(burst, plRate);
 		//pkg.printPacket('h');
