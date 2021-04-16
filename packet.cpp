@@ -1,8 +1,12 @@
 #include "packet.hpp"
-#include "toolbox.hpp"
+//#include "toolbox.hpp"
 #include <iostream>
+#include <cmath>
 #include <cstdint>
 #include <bitset>
+#include <stdlib.h>
+#include <time.h>
+#include <random>
 //#include <iomanip>
 
 packet::packet(){
@@ -12,18 +16,18 @@ packet::packet(){
 }
 
 packet::packet(uint16_t len){
-    /*
+    
     this->length = len;
     uint16_t* packet_ = new uint16_t(len/2);
     for(uint16_t i=0; i<len/2; ++i){
-        packet_[i] = randomIntInterval(0, 0xffff);
+        packet_[i] = this->randomIntInterval(0, 0xffff);
     }
     packet_[3] = 0x0000;
     packet_[2] = len;
     packet_[3] = ~this->doChecksum(packet_, len);
     this->checksum = packet_[3];
     this->packetData = packet_;
-    */
+    
 }
 
 /*
@@ -85,7 +89,7 @@ void packet::printPacket(char mode){
 //Flips the "microPosition" bit of the word in "pos" of packet
 void packet::injectErrorInChunk(uint16_t pos, uint16_t microPosition){
     if(microPosition >= 16) std::cout << "warning: pos >= in injectErrorInChunk" << std::endl;
-    uint16_t auxiliary = pow(2,microPosition);
+    uint16_t auxiliary = uint16_t(pow(2,microPosition));
     this->packetData[pos] = (this->packetData[pos] ^ auxiliary);
 }
 
@@ -100,7 +104,7 @@ void packet::bernoulliModel(double BER){
     //This loop's purpose is to ensure the packet has at least one error
         for(uint16_t i = 0; i<this->length/2; ++i){
             for(uint16_t j = 0; j<16; ++j){
-                if(trueFalseProb(BER) == true){
+                if(this->trueFalseProb(BER) == true){
                     wasPacketModified = true;
                     this->injectErrorInChunk(i, j);
                 }
@@ -118,8 +122,8 @@ void packet::burstErrorPeriodicModel(int16_t Tmin, uint16_t Tmax, uint16_t Nmin,
     uint16_t threshold, eLength;
     uint16_t accumulator = 0;
 
-    threshold = randomIntInterval(Tmin, Tmax);
-    eLength = randomIntInterval(Nmin, Nmax);
+    threshold = this->randomIntInterval(Tmin, Tmax);
+    eLength = this->randomIntInterval(Nmin, Nmax);
     accumulator += threshold;
 
     for(i=0; i<this->length/2; ++i){
@@ -131,8 +135,8 @@ void packet::burstErrorPeriodicModel(int16_t Tmin, uint16_t Tmax, uint16_t Nmin,
             --threshold;
 
             if(threshold == 0){
-                threshold = randomIntInterval(Tmin, Tmax);
-                eLength = randomIntInterval(Nmin, Nmax);
+                threshold = this->randomIntInterval(Tmin, Tmax);
+                eLength = this->randomIntInterval(Nmin, Nmax);
                 accumulator += threshold;
             }
         }
@@ -163,7 +167,7 @@ void packet::gilbertModel(uint16_t burst, double plRate){
         for(uint16_t i=0; i<this->length/2; ++i){
             for(uint16_t pos=15; pos<16; --pos){
                 if(state == true){
-                    if(trueFalseProb(1-p)){
+                    if(this->trueFalseProb(1-p)){
                         state = true;
                     }else{
                         this->injectErrorInChunk(i, pos);
@@ -172,7 +176,7 @@ void packet::gilbertModel(uint16_t burst, double plRate){
                         state = false;
                     }
                 }else{
-                    if(trueFalseProb(1-q)){
+                    if(this->trueFalseProb(1-q)){
                         this->injectErrorInChunk(i, pos);
                         wasPacketModified = true;
                         //std::cout << i << " : " << pos << std::endl;
@@ -185,6 +189,27 @@ void packet::gilbertModel(uint16_t burst, double plRate){
         }
     }
 }
+
+uint16_t packet::randomnum(uint16_t max){
+    srand (clock());
+    return (rand() % max);
+}
+double packet::randZeroToOne(){
+    srand (clock());
+    return rand() / (RAND_MAX + 1.);
+}
+bool packet::trueFalseProb(double limit){
+    limit = limit - randZeroToOne();
+    if(limit > 0) return true;
+    return false;
+}
+uint16_t packet::randomIntInterval(uint16_t a, uint16_t b){
+    std::random_device rd; // obtain a random number from hardware
+    std::mt19937 gen(rd()); // seed the generator
+    std::uniform_int_distribution<> distr(a, b); // define the range
+    return distr(gen);
+}
+
 
 packet::~packet(){
     delete [] packetData;

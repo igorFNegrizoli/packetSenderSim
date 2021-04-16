@@ -5,16 +5,18 @@
 checksum16Bit::checksum16Bit(){
 }
 checksum16Bit::checksum16Bit(uint16_t len){
+    /*
     this->length = len;
     uint16_t* packet_ = new uint16_t(len/2);
     for(uint16_t i=0; i<len/2; ++i){
-        packet_[i] = randomIntInterval(0, 0xffff);
+        packet_[i] = this->randomIntInterval(0, 0xffff);
     }
     packet_[3] = 0x0000;
     packet_[2] = len;
     packet_[3] = ~this->doChecksum(packet_, len);
     this->checksum = packet_[3];
     this->packetData = packet_;
+    */
 }
 checksum16Bit::checksum16Bit(uint16_t len, bool zeroOrOne){
 }

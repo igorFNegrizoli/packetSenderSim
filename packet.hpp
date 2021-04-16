@@ -26,6 +26,11 @@ class packet{
         void bernoulliModel(double BER);
         void burstErrorPeriodicModel(int16_t Tmin, uint16_t Tmax, uint16_t Nmin, uint16_t Nmax);
         void gilbertModel(uint16_t burst, double plRate);
+        uint16_t randomnum(uint16_t max);
+        double randZeroToOne();
+        bool trueFalseProb(double limit);
+        uint16_t randomIntInterval(uint16_t a, uint16_t b);
+
 
         virtual uint16_t doChecksum(uint16_t* packet, uint16_t length){
             
