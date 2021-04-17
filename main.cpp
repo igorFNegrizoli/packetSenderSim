@@ -2,7 +2,7 @@
 #include <iostream>
 
 int main(){
-
+	
 	cout << "Executando testes" << endl;
 	
 	testBench testes;
@@ -15,14 +15,14 @@ int main(){
 
 	std::cout << endl;
 	
+/*
 
-	/*
-	udpPacket pkg(8);
+	checksum16Bit pkg(8);
 	pkg.printPacket('b');
-	pkg.burstErrorPeriodicModel(8, 8, 2, 2);
+	pkg.burstErrorPeriodicModel(2,2,80,80);
 	pkg.printPacket('b');
-	cout << pkg.verifyChecksum() << endl;
-	*/
+	std::cout << pkg.verifyChecksum() << std::endl;
+*/
 
     return 0;
 }

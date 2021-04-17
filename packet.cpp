@@ -1,5 +1,4 @@
 #include "packet.hpp"
-//#include "toolbox.hpp"
 #include <iostream>
 #include <cmath>
 #include <cstdint>
@@ -7,7 +6,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <random>
-//#include <iomanip>
 
 packet::packet(){
     this->length = 0;
@@ -16,7 +14,7 @@ packet::packet(){
 }
 
 packet::packet(uint16_t len){
-    
+    //std::cout << "aulas" << std::endl;
     this->length = len;
     uint16_t* packet_ = new uint16_t(len/2);
     for(uint16_t i=0; i<len/2; ++i){

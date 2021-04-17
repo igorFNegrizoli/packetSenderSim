@@ -1,6 +1,7 @@
 #ifndef PACKET_HPP_INCLUDED
 #define PACKET_HPP_INCLUDED
 #include <cstdint>
+#include <iostream>
 
 //Implementação em classes mais concisa e legivel que a a versão anterior
 
@@ -30,10 +31,7 @@ class packet{
         double randZeroToOne();
         bool trueFalseProb(double limit);
         uint16_t randomIntInterval(uint16_t a, uint16_t b);
-
-
         virtual uint16_t doChecksum(uint16_t* packet, uint16_t length){
-            
             return 0;
         }
 
