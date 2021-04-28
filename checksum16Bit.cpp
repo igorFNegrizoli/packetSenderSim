@@ -5,8 +5,10 @@ checksum16Bit::checksum16Bit(){
 }
 checksum16Bit::checksum16Bit(uint16_t len):packet(len){
     //std::cout << "salve checksum16Bit" << std::endl;
+    this->packetData[3] = 0x0000;
     this->packetData[3] = ~this->doChecksum(this->packetData, len);
     this->checksum = this->packetData[3];
+
 }
 checksum16Bit::checksum16Bit(uint16_t len, bool zeroOrOne):packet(len, zeroOrOne){
 }

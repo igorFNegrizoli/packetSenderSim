@@ -20,10 +20,10 @@ packet::packet(uint16_t len){
     for(uint16_t i=0; i<len/2; ++i){
         packet_[i] = this->randomIntInterval(0, 0xffff);
     }
-    packet_[3] = 0x0000;
+    //packet_[3] = 0x0000;
     packet_[2] = len;
-    packet_[3] = ~this->doChecksum(packet_, len);
-    this->checksum = packet_[3];
+    //packet_[3] = ~this->doChecksum(packet_, len);
+    //this->checksum = packet_[3];
     this->packetData = packet_;
     
 }
