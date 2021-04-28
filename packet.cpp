@@ -65,11 +65,6 @@ void packet::setChecksum(){
     this->checksum = ~this->doChecksum(this->packetData, this->length);//~ inverte os bits
 }
 
-bool packet::verifyChecksum(){
-    uint16_t chc = this->doChecksum(this->packetData, this->length);
-    return(chc == 0xffff);
-}
-
 void packet::printPacket(char mode){
     std::cout << std::hex << "len: " << this->length << std::hex << " checksum: " << this->checksum << std::endl;
     switch(mode){

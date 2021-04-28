@@ -20,7 +20,9 @@ class packet{
         uint16_t getChecksum();
         void setLength(uint16_t a);
         void setChecksum(uint16_t a);
-        bool verifyChecksum();
+        virtual bool verifyChecksum(){
+            return 0;
+        }
         void setChecksum();
         void printPacket(char mode);
         void injectErrorInChunk(uint16_t pos, uint16_t microPosition);
