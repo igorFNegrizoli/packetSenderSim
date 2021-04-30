@@ -1,8 +1,10 @@
-#include "testbench.hpp"
+//#include "testbench.hpp"
+#include "CRC16Bit.hpp"
 #include <iostream>
 
 int main(){
 	
+/*
 	cout << "Executando testes" << endl;
 	
 	testBench testes;
@@ -15,14 +17,14 @@ int main(){
 
 	std::cout << endl;
 	
-/*
+*/
 
-	checksum16Bit pkg(8);
+	CRC16Bit pkg(8);
 	pkg.printPacket('b');
-	pkg.burstErrorPeriodicModel(2,2,80,80);
+	pkg.burstErrorPeriodicModel(2, 2, 80, 80);
 	pkg.printPacket('b');
 	std::cout << pkg.verifyChecksum() << std::endl;
-*/
+
 
     return 0;
 }
