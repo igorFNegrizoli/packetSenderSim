@@ -15,6 +15,7 @@ class packet{
     public:
         packet();
         packet(uint16_t len);
+        packet(packet* basePacket);
         packet(uint16_t len, bool zeroOrOne);
         uint16_t getLength();
         uint16_t getChecksum();

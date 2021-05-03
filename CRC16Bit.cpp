@@ -12,6 +12,9 @@ CRC16Bit::CRC16Bit(uint16_t len):packet(len){
 CRC16Bit::CRC16Bit(uint16_t len, bool zeroOrOne):packet(len, zeroOrOne){
 }
 
+CRC16Bit::CRC16Bit(packet* basePacket):packet(basePacket){
+}
+
 bool CRC16Bit::verifyChecksum(){
     int i, j;
     uint16_t crc = 0;

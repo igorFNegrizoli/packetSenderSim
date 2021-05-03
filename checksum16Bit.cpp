@@ -13,6 +13,8 @@ checksum16Bit::checksum16Bit(uint16_t len):packet(len){
 checksum16Bit::checksum16Bit(uint16_t len, bool zeroOrOne):packet(len, zeroOrOne){
 }
 
+checksum16Bit::checksum16Bit(packet* basePacket):packet(basePacket){
+}
 
 bool checksum16Bit::verifyChecksum(){
     uint16_t chc = this->doChecksum(this->packetData, this->length);
@@ -34,6 +36,7 @@ uint16_t checksum16Bit::doChecksum(uint16_t* packet, uint16_t length){
     checksum = (uint16_t)checksum_;
     return checksum;
 }
+
 
 checksum16Bit::~checksum16Bit(){
 }

@@ -12,6 +12,7 @@ public:
     CRC16Bit();
     CRC16Bit(uint16_t len);
     CRC16Bit(uint16_t len, bool zeroOrOne);
+    CRC16Bit(packet* basePacket);
     bool verifyChecksum();
     uint16_t doChecksum(uint16_t* packet, uint16_t poly);
     ~CRC16Bit();

@@ -13,6 +13,8 @@ packet::packet(){
     this->packetData = nullptr;
 }
 
+//Nota: Avaliar se vale a pena mudar o indice onde guarda a length nas implementações em vez de deixar a mesma na classe abstrata
+
 packet::packet(uint16_t len){
     //std::cout << "aulas" << std::endl;
     this->length = len;
@@ -24,6 +26,18 @@ packet::packet(uint16_t len){
     packet_[2] = len;
     //packet_[3] = ~this->doChecksum(packet_, len);
     //this->checksum = packet_[3];
+    this->packetData = packet_;
+    
+}
+
+packet::packet(packet* basePacket){
+    this->length = basePacket->length;
+    uint16_t* packet_base = basePacket->packetData;
+    uint16_t* packet_ = new uint16_t(this->length/2);
+    for(uint16_t i=0; i<this->length/2; ++i){
+        packet_[i] = packet_base[i];
+    }
+    packet_[2] = this->length;
     this->packetData = packet_;
     
 }
