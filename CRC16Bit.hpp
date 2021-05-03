@@ -15,6 +15,7 @@ public:
     CRC16Bit(packet* basePacket);
     bool verifyChecksum();
     uint16_t doChecksum(uint16_t* packet, uint16_t poly);
+    uint16_t* getData();
     ~CRC16Bit();
     
 };

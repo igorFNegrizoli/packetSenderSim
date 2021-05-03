@@ -11,6 +11,7 @@ class checksum16Bit:public packet{
     checksum16Bit(packet* basePacket);
     bool verifyChecksum();
     uint16_t doChecksum(uint16_t* packet, uint16_t length);
+    uint16_t* getData();
     ~checksum16Bit();
     
 };

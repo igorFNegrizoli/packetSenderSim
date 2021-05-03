@@ -37,6 +37,9 @@ class packet{
         virtual uint16_t doChecksum(uint16_t* packet, uint16_t length){
             return 0;
         }
+        virtual uint16_t* getData(){
+            return 0;
+        }
 
         ~packet();
 };

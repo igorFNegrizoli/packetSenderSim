@@ -37,6 +37,12 @@ uint16_t checksum16Bit::doChecksum(uint16_t* packet, uint16_t length){
     return checksum;
 }
 
+uint16_t* getData(){
+    uint16_t* packet_ = new uint16_t((len/2)-1);
+    for(uint16_t i=0; i<3; i++) packet_[i] = this->packetData[i];
+    for(uint16_t i=4; i<this->length; i++) packet_[i-1] = this->packetData[i];
+    return packet_;
+}
 
 checksum16Bit::~checksum16Bit(){
 }
