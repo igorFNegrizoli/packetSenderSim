@@ -44,8 +44,8 @@ uint16_t CRC16Bit::doChecksum(uint16_t* packet, uint16_t poly){
     return crc;
 }
 
-uint16_t* getData(){
-    uint16_t* packet_ = new uint16_t((len/2)-1);
+uint16_t* CRC16Bit::getData(){
+    uint16_t* packet_ = new uint16_t((this->length/2)-1);
     for(uint16_t i=0; i<this->length-1; i++) packet_[i] = this->packetData[i];
     return packet_;
 }
