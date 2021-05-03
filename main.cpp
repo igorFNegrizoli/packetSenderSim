@@ -17,6 +17,7 @@ int main(){
 			//pkg.printPacket('b');
 		}
 	}
+	
 
 	std::cout << std::endl << detectionFails << std::endl;
 */
@@ -26,7 +27,7 @@ int main(){
 	CRC16Bit* pkg2 = new CRC16Bit(10);
 	std::cout << std::endl;
 	pkg2->printPacket('h');
-	
+
 	uint16_t* teste = pkg->getData();
 	for(int i=0; i<4; i++) std::cout << teste[i] << " " ;
 	std::cout << std::endl;
