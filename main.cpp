@@ -1,9 +1,11 @@
+//#include "testbench.hpp"
 #include "Checksum16Bit.hpp"
 #include "CRC16Bit.hpp"
 #include "CRC32Bit.hpp"
 #include "Packet.hpp"
 #include "BernoulliErrorModel.hpp"
 #include "GilbertErrorModel.hpp"
+//#include "CRC16Bit.hpp"
 #include <iostream>
 #include <iomanip>//setprecision setfixed
 #include <cmath> //pow
@@ -40,7 +42,7 @@ static void test(ErrorModel *model, RNG *rng) {
 	for (int x = 0; x<20; ++x) diff[x]=0;
 	
 	cout << "\nN(B)\tf(bit)\tDevPad\t%\tFY\t%\tBOTH\tCHK\t%\tCRC16\t%\tCRC32\t%\tBOTH" << endl;
-	for (int N=pow(2,3); N<pow(2,11); N*=2) {
+	for (int N=pow(2,3); N<pow(2,4); N*=2) {
 		detectionFails[CHK] = 0;
 		detectionFails[CRC] = 0;
 		detectionFails[CRC32] = 0;
@@ -48,10 +50,11 @@ static void test(ErrorModel *model, RNG *rng) {
 	
 	for (int i=0; i<TIMES; ++i) devpad[i]=0;
 
-	int bothUndetected = 0, both32Undetected = 0, noErrors = 0; //numero de vezes que chk e crc falharam juntos
+	int bothUndetected = 0, both32Undetected = 0; //numero de vezes que chk e crc falharam juntos
+	long testsWithErrors = 0; //execuções com erros injetados para cada cenario
 	for(int i=0; i<TIMES; ++i){
 		Packet *pkg = new Packet(N, rng);
-		//pkg.print('b');
+		//pkg->print('b');
 		Packet *pk2 = pkg->clone();
 
 		uint16_t _chk = check.doChecksum(pkg);		
@@ -61,8 +64,9 @@ static void test(ErrorModel *model, RNG *rng) {
 		int err = model->injectErrors(pkg);
 		bitErrors+=err;
 		devpad[i] = err;
-		if (err==0)  noErrors++;
-		/*if (err>0) { //imprimir rajadas
+		if (err>0) {
+			testsWithErrors++;
+			//pkg->print('b');
  			int k = 0;
 			for (uint16_t x =0; x<pkg->getLength()/2; ++x) {
 				uint16_t auxiliary = (pkg->getData()[x]^pk2->getData()[x]);			
@@ -71,13 +75,16 @@ static void test(ErrorModel *model, RNG *rng) {
 				    int r = auxiliary&d;
 				    //cout<<bitset<16>(auxiliary)<< "- "<<bitset<16>(d)<< "- "<<bitset<16>(r)<<endl;	
 				    if (r >0) k++;
-				    else { diff[k]++; k=0;
+				    else { 
+					diff[k]++; 
+					if (k>0) diff[0]++;
+					k=0;					
                                     }
 				}
 			}
 						
 		}
-                */
+                
 
 		if (DEBUG) cout<<"err: "<<err<<endl;
 		bool chkUndetect = false;
@@ -111,23 +118,23 @@ static void test(ErrorModel *model, RNG *rng) {
 	}
 	double errp = (double)bitErrors/TIMES;
 	//desvio padrao
-	double soma = 0.0;
-	for (int x=0; x<TIMES; ++x)
-	    soma+= pow((devpad[x]-errp), 2);
-	double dpad = sqrt(soma)/TIMES;
+	double sum = 0.0;
+	for (long x=0; x<TIMES; ++x)
+	    sum+= pow(devpad[x]-errp, 2);
+	double dpad = sqrt(sum/TIMES);
 
 	cout<<N<<"\t"
-        <<FIXED_FLOAT(4,errp)<<"\t" //media de bits invertidos
+                <<FIXED_FLOAT(4,errp)<<"\t" //media de bits invertidos
 		<<FIXED_FLOAT(4,dpad)<<"\t" //devpad
-        <<FIXED_FLOAT(4,(errp*100.0)/(N*8))<<"\t" //% bits invertidos no pacote
-		<< (TIMES - noErrors)<<"\t"
-		<< FIXED_FLOAT(4,((TIMES - noErrors)*100.0)/TIMES)<<"\t"
+                <<FIXED_FLOAT(4,(errp*100.0)/(N*8))<<"\t" //% bits invertidos no pacote
+		<< testsWithErrors<<"\t"
+		<< FIXED_FLOAT(4,(testsWithErrors*100.0)/TIMES)<<"\t"
 		<<bothUndetected<<"\t"
-        <<detectionFails[CHK]<<"\t"<<FIXED_FLOAT(4,detectionFails[CHK]*100.0/(TIMES-noErrors))<<"\t" //falhas de detecção checksum
-		<<detectionFails[CRC]<<"\t"<<FIXED_FLOAT(4,detectionFails[CRC]*100.0/(TIMES-noErrors))<<"\t"//falhas de detecção crc		
-		<<detectionFails[CRC32]<<"\t"<<FIXED_FLOAT(4,detectionFails[CRC32]*100.0/(TIMES-noErrors))<<"\t"//falhas de detecção crc32
+                <<detectionFails[CHK]<<"\t"<<FIXED_FLOAT(4,detectionFails[CHK]*100.0/testsWithErrors)<<"\t" //falhas de detecção checksum
+		<<detectionFails[CRC]<<"\t"<<FIXED_FLOAT(4,detectionFails[CRC]*100.0/testsWithErrors)<<"\t"//falhas de detecção crc		
+		<<detectionFails[CRC32]<<"\t"<<FIXED_FLOAT(4,detectionFails[CRC32]*100.0/testsWithErrors)<<"\t"//falhas de detecção crc32
 		<<both32Undetected<<endl;
-        //for (int x=0; x<10;++x) cout<<"["<<x<<"] = "<<diff[x]<<endl;
+        for (int x=0; x<20;++x) cout<<"["<<x<<"] = "<<diff[x]<<endl;
 	}//end for N	
 }
 
@@ -143,11 +150,11 @@ int main(){
 
 	//teste gilbert
 	rng = new RNG(SEED);
-	
-    GilbertErrorModel *gil = new GilbertErrorModel(GIL_BURST, BER, rng);
+        GilbertErrorModel *gil = new GilbertErrorModel(GIL_BURST, BER, rng);
 	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
 	test(gil, rng);
 	delete gil;
 	delete rng;
+
     return 0;
 }
