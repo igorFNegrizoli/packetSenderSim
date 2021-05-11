@@ -44,7 +44,7 @@ class GilbertErrorModel: public ErrorModel {
 	return double(1)/burst;
      }
 
-    uint16_t injectErrors(Packet* packet) {
+    uint16_t injectErrors(Packet* packet, bool forceError) {
 	//packet->print('b');
     	uint16_t numberOfErrors = 0;
     	//q e p representam a probabilidade de passar para o estado bom e para o estado ruim respectivamente
@@ -63,9 +63,7 @@ class GilbertErrorModel: public ErrorModel {
     	bool state = GOOD_STATE;//good state
 
     	bool wasPacketModified = false;
-    	//while(!wasPacketModified){
-    	//This loop's purpose is to ensure the packet has at least one error
-          for(int i=0; i<packet->getLength()/2; ++i){
+    	for(int i=0; i<packet->getLength()/2; ++i){
             //std::cout << "\nb"<<std::bitset<16>(packet->getData()[i]) <<std::endl;
             for(uint16_t j=15; j<16; --j){
                 if(state == GOOD_STATE){
@@ -87,14 +85,12 @@ class GilbertErrorModel: public ErrorModel {
                 }
             }
            // std::cout << "a"<<std::bitset<16>(packet->getData()[i]) <<std::endl;
-          }
-	if (numberOfErrors == 0)
-		 numberOfErrors+=packet->injectErrorInChunk(getRNG()->next(packet->getLength())); 
-        //}
+        }
+	if (numberOfErrors == 0 && forceError)
+	    numberOfErrors+=packet->injectErrorInChunk(getRNG()->next(packet->getLength())); 
         return numberOfErrors;
     }
 
 };
-
 
 
