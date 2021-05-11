@@ -34,5 +34,5 @@ bool RNG::trueFalseProb(double limit){
 }
 
 uint16_t RNG::next(uint16_t a, uint16_t b){
-    return next((b-a)+a);
+    return (next(b-a)+a);
 }
