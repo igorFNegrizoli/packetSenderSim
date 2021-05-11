@@ -5,7 +5,7 @@
 #include "Packet.hpp"
 #include "BernoulliErrorModel.hpp"
 #include "GilbertErrorModel.hpp"
-#include "PeriodicBurstErrorModel.hpp"
+//#include "CRC16Bit.hpp"
 #include <iostream>
 #include <iomanip>//setprecision setfixed
 #include <cmath> //pow
@@ -23,12 +23,10 @@ using namespace std;
 #define TIMES 1000000
 #define BER 0.001 //0.001 0.005 0.01 0.02
 #define GIL_BURST 2
-#define PBEM_N 2 //PeriodicBurstErrorModel N
-#define PBEM_T 80 //PeriodicBurstErrorModel T
 
 #define SEED 0x2021
 
-static void test(ErrorModel *model, RNG *rng) {
+static void test(ErrorModel *model) {
 	int detectionFails[3]; //0=checksum, 1=crc 2=crc32 para contar o numero de falhas de detecção
 	int bitErrors; //para contar o numero de total bits invertidos
 	
@@ -43,13 +41,15 @@ static void test(ErrorModel *model, RNG *rng) {
 	int devpad[TIMES];
 	for (int x = 0; x<20; ++x) diff[x]=0;
 	
+
+	
 	cout << "\nN(B)\tf(bit)\tDevPad\t%\tFY\t%\tBOTH\tCHK\t%\tCRC16\t%\tCRC32\t%\tBOTH" << endl;
-	for (int N=pow(2,3); N<pow(2,4); N*=2) {
+	for (int N=pow(2,3); N<pow(2,11); N*=2) {
 		detectionFails[CHK] = 0;
 		detectionFails[CRC] = 0;
 		detectionFails[CRC32] = 0;
 		bitErrors = 0;
-	
+	RNG *rng = new RNG(N);
 	for (int i=0; i<TIMES; ++i) devpad[i]=0;
 
 	int bothUndetected = 0, both32Undetected = 0; //numero de vezes que chk e crc falharam juntos
@@ -63,13 +63,13 @@ static void test(ErrorModel *model, RNG *rng) {
 		uint16_t _crc = crc.doCRC(pkg); 
 		uint32_t _crc32 = crc32.doCRC(pkg);
 		
-		int err = model->injectErrors(pkg);
+		int err = model->injectErrors(pkg, false);//true=forceError
 		bitErrors+=err;
 		devpad[i] = err;
 		if (err>0) {
 			testsWithErrors++;
 			//pkg->print('b');
- 			int k = 0;
+ 			/*int k = 0;
 			for (uint16_t x =0; x<pkg->getLength()/2; ++x) {
 				uint16_t auxiliary = (pkg->getData()[x]^pk2->getData()[x]);			
 				for (uint16_t y =15; y<16;--y) {
@@ -83,7 +83,7 @@ static void test(ErrorModel *model, RNG *rng) {
 					k=0;					
                                     }
 				}
-			}
+			}*/
 						
 		}
                 
@@ -126,18 +126,21 @@ static void test(ErrorModel *model, RNG *rng) {
 	double dpad = sqrt(sum/TIMES);
 
 	cout<<N<<"\t"
-                <<FIXED_FLOAT(4,errp)<<"\t" //media de bits invertidos
-		<<FIXED_FLOAT(4,dpad)<<"\t" //devpad
+                <<FIXED_FLOAT(2,errp)<<"\t" //media de bits invertidos
+		<<FIXED_FLOAT(2,dpad)<<"\t" //devpad
                 <<FIXED_FLOAT(4,(errp*100.0)/(N*8))<<"\t" //% bits invertidos no pacote
 		<< testsWithErrors<<"\t"
-		<< FIXED_FLOAT(4,(testsWithErrors*100.0)/TIMES)<<"\t"
+		<< FIXED_FLOAT(2,(testsWithErrors*100.0)/TIMES)<<"\t"
 		<<bothUndetected<<"\t"
-                <<detectionFails[CHK]<<"\t"<<FIXED_FLOAT(4,detectionFails[CHK]*100.0/testsWithErrors)<<"\t" //falhas de detecção checksum
-		<<detectionFails[CRC]<<"\t"<<FIXED_FLOAT(4,detectionFails[CRC]*100.0/testsWithErrors)<<"\t"//falhas de detecção crc		
-		<<detectionFails[CRC32]<<"\t"<<FIXED_FLOAT(4,detectionFails[CRC32]*100.0/testsWithErrors)<<"\t"//falhas de detecção crc32
+                <<detectionFails[CHK]<<"\t"<<FIXED_FLOAT(2,detectionFails[CHK]*100.0/testsWithErrors)<<"\t" //falhas de detecção checksum
+		<<detectionFails[CRC]<<"\t"<<FIXED_FLOAT(2,detectionFails[CRC]*100.0/testsWithErrors)<<"\t"//falhas de detecção crc		
+		<<detectionFails[CRC32]<<"\t"<<FIXED_FLOAT(2,detectionFails[CRC32]*100.0/testsWithErrors)<<"\t"//falhas de detecção crc32
 		<<both32Undetected<<endl;
-        for (int x=0; x<20;++x) cout<<"["<<x<<"] = "<<diff[x]<<endl;
-	}//end for N	
+        //for (int x=0; x<20;++x) cout<<"["<<x<<"] = "<<diff[x]<<endl;
+        delete rng;
+	
+	}//end for N
+		
 }
 
 int main(){
@@ -146,28 +149,17 @@ int main(){
 	
 	ErrorModel *ber = new BernoulliErrorModel(BER, rng);
 	cout << "TIMES= "<<TIMES<<"\nBER= "<<BER<<endl;
-	test(ber, rng);
-	delete ber;
-	delete rng;
+	test(ber);
+	delete ber;	
 
 	//teste gilbert
-	rng = new RNG(SEED);
+	delete rng;
+        rng = new RNG(SEED);
         GilbertErrorModel *gil = new GilbertErrorModel(GIL_BURST, BER, rng);
 	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
-	test(gil, rng);
+	test(gil);
 	delete gil;
 	delete rng;
-
-	//teste periodic burst
-	rng = new RNG(SEED);
-        PeriodicBurstErrorModel *pbem = new PeriodicBurstErrorModel(PBEM_N, PBEM_T);
-	cout << "\nPBEM= ["<<PBEM_N<<", "<<PBEM_T<<"]"<<endl;
-	test(pbem, rng);
-	
-	delete gil;
-	delete rng;
-	delete pbem;
-
 
     return 0;
 }
