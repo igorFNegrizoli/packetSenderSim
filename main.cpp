@@ -5,6 +5,8 @@
 #include "Packet.hpp"
 #include "BernoulliErrorModel.hpp"
 #include "GilbertErrorModel.hpp"
+#include "PeriodicBurstErrorModel.hpp"
+
 //#include "CRC16Bit.hpp"
 #include <iostream>
 #include <iomanip>//setprecision setfixed
@@ -40,8 +42,6 @@ static void test(ErrorModel *model) {
 	long diff[50];
 	int devpad[TIMES];
 	for (int x = 0; x<20; ++x) diff[x]=0;
-	
-
 	
 	cout << "\nN(B)\tf(bit)\tDevPad\t%\tFY\t%\tBOTH\tCHK\t%\tCRC16\t%\tCRC32\t%\tBOTH" << endl;
 	for (int N=pow(2,3); N<pow(2,11); N*=2) {
@@ -159,6 +159,14 @@ int main(){
 	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
 	test(gil);
 	delete gil;
+
+	//teste periodico
+	delete rng;
+        rng = new RNG(SEED);
+        PeriodicBurstErrorModel *per = new PeriodicBurstErrorModel(1,10, rng);
+	//cout << "\nPER= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
+	test(per);
+	delete per;
 	delete rng;
 
     return 0;
