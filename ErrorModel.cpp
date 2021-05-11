@@ -1,6 +1,8 @@
 #include "ErrorModel.hpp"
 
-ErrorModel::ErrorModel(){}
+ErrorModel::ErrorModel(){
+	this->rng = nullptr;
+}
 
 ErrorModel::ErrorModel(RNG* rng_) {	
         this->rng = rng_;
