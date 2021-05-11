@@ -23,7 +23,7 @@ class PeriodicBurstErrorModel: public ErrorModel {
      this->rng = rng_;
      }
 
-    uint16_t injectErrors(Packet* packet) {
+    uint16_t injectErrors(Packet* packet, bool forceError) {
         // Usar Tmin > 0 e Nmin > 0     Para um threshold(T) ou burstLength(N) de tamanho fixo, usar Tmin = Tmax e Nmin = Nmax
         // Use Tmin > 0 e Nmin > 0      For a fixed length threshold(T) or burstLength(N), use Tmin = Tmax and Nmin = Nmax
         uint16_t i, pos;
@@ -59,8 +59,10 @@ class PeriodicBurstErrorModel: public ErrorModel {
                 }
             }
         }
+	if (numberOfErrors == 0 && forceError)
+	    numberOfErrors+=packet->injectErrorInChunk(getRNG()->next(packet->getLength()));     
 
-    return numberOfErrors;
+        return numberOfErrors;
     }
 
 };
