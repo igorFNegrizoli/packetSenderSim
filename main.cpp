@@ -5,7 +5,7 @@
 #include "Packet.hpp"
 #include "BernoulliErrorModel.hpp"
 #include "GilbertErrorModel.hpp"
-//#include "CRC16Bit.hpp"
+#include "PeriodicBurstErrorModel.hpp"
 #include <iostream>
 #include <iomanip>//setprecision setfixed
 #include <cmath> //pow
@@ -23,6 +23,8 @@ using namespace std;
 #define TIMES 1000000
 #define BER 0.001 //0.001 0.005 0.01 0.02
 #define GIL_BURST 2
+#define PBEM_N 2 //PeriodicBurstErrorModel N
+#define PBEM_T 80 //PeriodicBurstErrorModel T
 
 #define SEED 0x2021
 
@@ -155,6 +157,17 @@ int main(){
 	test(gil, rng);
 	delete gil;
 	delete rng;
+
+	//teste periodic burst
+	rng = new RNG(SEED);
+        PeriodicBurstErrorModel *pbem = new PeriodicBurstErrorModel(PBEM_N, PBEM_T);
+	cout << "\nPBEM= ["<<PBEM_N<<", "<<PBEM_T<<"]"<<endl;
+	test(pbem, rng);
+	
+	delete gil;
+	delete rng;
+	delete pbem;
+
 
     return 0;
 }
