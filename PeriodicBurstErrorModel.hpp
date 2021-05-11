@@ -8,19 +8,15 @@ class PeriodicBurstErrorModel: public ErrorModel {
      uint16_t Nmin, Nmax; //Minumum and maximum burst length
      uint16_t Tmin, Tmax; //Minumum and maximum Period Threshold
    public:        
-    PeriodicBurstErrorModel(uint16_t N, uint16_t T):ErrorModel() {
-	 this->Nmin = N;
-     this->Nmax = N;
-     this->Tmin = T;
-     this->Tmax = T;
+    PeriodicBurstErrorModel(uint16_t N, uint16_t T, RNG* rng) {
+	PeriodicBurstErrorModel(N, N, T, T, rng);
      }
      
-     PeriodicBurstErrorModel(uint16_t Nmin, uint16_t Nmax, uint16_t Tmin, uint16_t Tmax, RNG* rng_):ErrorModel(rng) {
+     PeriodicBurstErrorModel(uint16_t Nmin, uint16_t Nmax, uint16_t Tmin, uint16_t Tmax, RNG* rng):ErrorModel(rng) {
 	 this->Nmin = Nmin;
-     this->Nmax = Nmax;
-     this->Tmin = Tmin;
-     this->Tmax = Tmax;
-     this->rng = rng_;
+         this->Nmax = Nmax;
+         this->Tmin = Tmin;
+         this->Tmax = Tmax;
      }
 
     uint16_t injectErrors(Packet* packet, bool forceError) {
