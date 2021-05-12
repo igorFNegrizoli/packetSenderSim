@@ -8,8 +8,7 @@ private:
     uint16_t Nmin, Nmax; //Minumum and maximum burst length
     uint16_t Tmin, Tmax; //Minumum and maximum Period Threshold
 public:        
-    PeriodicBurstErrorModel(uint16_t N, uint16_t T, RNG* rng_) {
-	PeriodicBurstErrorModel(N, N, T, T, rng);
+    PeriodicBurstErrorModel(uint16_t N, uint16_t T, RNG* rng_):PeriodicBurstErrorModel(N,N,T,T,rng_){
     }
      
 PeriodicBurstErrorModel(uint16_t Nmin, uint16_t Nmax, uint16_t Tmin, uint16_t Tmax, RNG* rng_):ErrorModel(rng_) {
