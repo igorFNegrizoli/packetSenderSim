@@ -43,7 +43,7 @@ static void test(ErrorModel *model) {
 	int devpad[TIMES];
 	for (int x = 0; x<20; ++x) diff[x]=0;
 	
-	cout << "\nN(B)\tf(bit)\tDevPad\t%\tFY\t%\tBOTH\tCHK\t%\tCRC16\t%\tCRC32\t%\tBOTH" << endl;
+	cout << "\nN(B)\tf(bit)\tDesvPad\t%\tFY\t%\tCHK\t%\tCRC16\t%\tBOTH\tCRC32\t%\tBOTH" << endl;
 	for (int N=pow(2,3); N<pow(2,11); N*=2) {
 		detectionFails[CHK] = 0;
 		detectionFails[CRC] = 0;
@@ -63,7 +63,7 @@ static void test(ErrorModel *model) {
 		uint16_t _crc = crc.doCRC(pkg); 
 		uint32_t _crc32 = crc32.doCRC(pkg);
 		
-		int err = model->injectErrors(pkg, false);//true=forceError
+		int err = model->injectErrors(pkg, true);//true=forceError
 		bitErrors+=err;
 		devpad[i] = err;
 		if (err>0) {
@@ -126,17 +126,20 @@ static void test(ErrorModel *model) {
 	double dpad = sqrt(sum/TIMES);
 
 	cout<<N<<"\t"
-                <<FIXED_FLOAT(2,errp)<<"\t" //media de bits invertidos
-		<<FIXED_FLOAT(2,dpad)<<"\t" //devpad
-                <<FIXED_FLOAT(4,(errp*100.0)/(N*8))<<"\t" //% bits invertidos no pacote
-		<< testsWithErrors<<"\t"
-		<< FIXED_FLOAT(2,(testsWithErrors*100.0)/TIMES)<<"\t"
-		<<bothUndetected<<"\t"
-                <<detectionFails[CHK]<<"\t"<<FIXED_FLOAT(2,detectionFails[CHK]*100.0/testsWithErrors)<<"\t" //falhas de detecção checksum
-		<<detectionFails[CRC]<<"\t"<<FIXED_FLOAT(2,detectionFails[CRC]*100.0/testsWithErrors)<<"\t"//falhas de detecção crc		
-		<<detectionFails[CRC32]<<"\t"<<FIXED_FLOAT(2,detectionFails[CRC32]*100.0/testsWithErrors)<<"\t"//falhas de detecção crc32
-		<<both32Undetected<<endl;
-        //for (int x=0; x<20;++x) cout<<"["<<x<<"] = "<<diff[x]<<endl;
+    <<FIXED_FLOAT(2,errp)<<"\t" //media de bits invertidos
+	<<FIXED_FLOAT(2,dpad)<<"\t" //devpad
+    <<FIXED_FLOAT(4,(errp*100.0)/(N*8))<<"\t" //% bits invertidos no pacote
+	<<testsWithErrors<<"\t"
+	<<FIXED_FLOAT(2,(testsWithErrors*100.0)/TIMES)<<"\t"
+    <<detectionFails[CHK]<<"\t"
+    <<FIXED_FLOAT(2,detectionFails[CHK]*100.0/testsWithErrors)<<"\t" //falhas de detecção checksum
+	<<detectionFails[CRC]<<"\t"
+	<<FIXED_FLOAT(2,detectionFails[CRC]*100.0/testsWithErrors)<<"\t"//falhas de detecção crc		
+	<<bothUndetected<<"\t"
+	<<detectionFails[CRC32]<<"\t"
+	<<FIXED_FLOAT(2,detectionFails[CRC32]*100.0/testsWithErrors)<<"\t"//falhas de detecção crc32
+	<<both32Undetected<<endl;
+    //for (int x=0; x<20;++x) cout<<"["<<x<<"] = "<<diff[x]<<endl;
         delete rng;
 	
 	}//end for N
