@@ -121,6 +121,7 @@ static void test(ErrorModel *model) {
 		   detectionFails[CRC32]++;
 		}		
 		delete pkg;
+		delete pk2;
 	}
 	double errp = (double)bitErrors/TIMES;
 	//desvio padrao
