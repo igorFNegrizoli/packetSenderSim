@@ -12,6 +12,10 @@
 #include <iomanip>//setprecision setfixed
 #include <cmath> //pow
 
+#include <cstdint>
+#include <cstdlib>
+#include <time.h> 
+
 #define CHK 0
 #define CRC 1
 #define CRC32 2
@@ -147,29 +151,97 @@ static void test(ErrorModel *model) {
 }
 
 int main(){
-	//teste bernoulli
+	
+	//teste bernoulli com BER = 0.001, 0.002, 0.01, 0.02
 	RNG* rng = new RNG(SEED);
 	
-	ErrorModel *ber = new BernoulliErrorModel(BER, rng);
+	ErrorModel *ber = new BernoulliErrorModel(0.001, rng);
 	cout << "TIMES= "<<TIMES<<"\nBER= "<<BER<<endl;
 	test(ber);
 	delete ber;	
 
-	//teste gilbert
 	delete rng;
-        rng = new RNG(SEED);
-        GilbertErrorModel *gil = new GilbertErrorModel(GIL_BURST, BER, rng);
+	rng = new RNG(SEED);
+	
+	ber = new BernoulliErrorModel(0.002, rng);
+	cout << "TIMES= "<<TIMES<<"\nBER= "<<BER<<endl;
+	test(ber);
+	delete ber;	
+
+	delete rng;
+	rng = new RNG(SEED);
+	
+	ber = new BernoulliErrorModel(0.01, rng);
+	cout << "TIMES= "<<TIMES<<"\nBER= "<<BER<<endl;
+	test(ber);
+	delete ber;	
+
+	delete rng;
+	rng = new RNG(SEED);
+	
+	ber = new BernoulliErrorModel(0.02, rng);
+	cout << "TIMES= "<<TIMES<<"\nBER= "<<BER<<endl;
+	test(ber);
+	delete ber;	
+
+	//teste gilbert com rajadas de 2 e 3 bits
+	delete rng;
+    rng = new RNG(SEED);
+    GilbertErrorModel *gil = new GilbertErrorModel(2, 0.001, rng);
+	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
+	test(gil);
+	delete gil;
+
+	delete rng;
+    rng = new RNG(SEED);
+    gil = new GilbertErrorModel(2, 0.002, rng);
+	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
+	test(gil);
+	delete gil;
+
+	delete rng;
+	rng = new RNG(SEED);
+    gil = new GilbertErrorModel(2, 0.01, rng);
+	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
+	test(gil);
+	delete gil;
+
+	delete rng;
+    rng = new RNG(SEED);
+    gil = new GilbertErrorModel(3, 0.001, rng);
+	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
+	test(gil);
+	delete gil;
+
+	delete rng;
+    rng = new RNG(SEED);
+    gil = new GilbertErrorModel(3, 0.002, rng);
+	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
+	test(gil);
+	delete gil;
+
+	delete rng;
+    rng = new RNG(SEED);
+    gil = new GilbertErrorModel(3, 0.01, rng);
 	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
 	test(gil);
 	delete gil;
 
 	//teste periodico
 	delete rng;
-        rng = new RNG(SEED);
-        PeriodicBurstErrorModel *per = new PeriodicBurstErrorModel(1,10, rng);
+    rng = new RNG(SEED);
+    PeriodicBurstErrorModel *per = new PeriodicBurstErrorModel(1,16, rng);
 	//cout << "\nPER= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
 	test(per);
 	delete per;
+
+	delete rng;
+	rng = new RNG(SEED);
+    per = new PeriodicBurstErrorModel(1,3,16,16, rng);
+	//cout << "\nPER= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
+	test(per);
+	delete per;
+
 	delete rng;
 
     return 0;
