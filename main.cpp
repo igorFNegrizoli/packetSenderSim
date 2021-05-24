@@ -61,7 +61,7 @@ static void test(ErrorModel *model) {
 	for(int i=0; i<TIMES; ++i){
 		Packet *pkg = new Packet(N, rng);
 		//pkg->print('b');
-		Packet *pk2 = pkg->clone();
+
 
 		uint16_t _chk = check.doChecksum(pkg);		
 		uint16_t _crc = crc.doCRC(pkg); 
@@ -72,22 +72,6 @@ static void test(ErrorModel *model) {
 		devpad[i] = err;
 		if (err>0) {
 			testsWithErrors++;
-			//pkg->print('b');
- 			/*int k = 0;
-			for (uint16_t x =0; x<pkg->getLength()/2; ++x) {
-				uint16_t auxiliary = (pkg->getData()[x]^pk2->getData()[x]);			
-				for (uint16_t y =15; y<16;--y) {
-			            int d = uint16_t(pow(2, y));
-				    int r = auxiliary&d;
-				    //cout<<bitset<16>(auxiliary)<< "- "<<bitset<16>(d)<< "- "<<bitset<16>(r)<<endl;	
-				    if (r >0) k++;
-				    else { 
-					diff[k]++; 
-					if (k>0) diff[0]++;
-					k=0;					
-                                    }
-				}
-			}*/
 						
 		}
                 
@@ -121,7 +105,6 @@ static void test(ErrorModel *model) {
 		   detectionFails[CRC32]++;
 		}		
 		delete pkg;
-		delete pk2;
 	}
 	double errp = (double)bitErrors/TIMES;
 	//desvio padrao
@@ -151,13 +134,13 @@ static void test(ErrorModel *model) {
 		
 }
 
-int main(){
+void testRoutine(){
 	
 	//teste bernoulli com BER = 0.001, 0.002, 0.01, 0.02
 	RNG* rng = new RNG(SEED);
 	
 	ErrorModel *ber = new BernoulliErrorModel(0.001, rng);
-	cout << "TIMES= "<<TIMES<<"\nBER= "<<BER<<endl;
+	cout << endl << endl <<"\nBER= "<<0.001<<endl;
 	test(ber);
 	delete ber;	
 
@@ -165,7 +148,7 @@ int main(){
 	rng = new RNG(SEED);
 	
 	ber = new BernoulliErrorModel(0.002, rng);
-	cout << "TIMES= "<<TIMES<<"\nBER= "<<BER<<endl;
+	cout << endl << endl <<"\nBER= "<<0.002<<endl;
 	test(ber);
 	delete ber;	
 
@@ -173,7 +156,7 @@ int main(){
 	rng = new RNG(SEED);
 	
 	ber = new BernoulliErrorModel(0.01, rng);
-	cout << "TIMES= "<<TIMES<<"\nBER= "<<BER<<endl;
+	cout << endl << endl <<"\nBER= "<<0.01<<endl;
 	test(ber);
 	delete ber;	
 
@@ -181,7 +164,7 @@ int main(){
 	rng = new RNG(SEED);
 	
 	ber = new BernoulliErrorModel(0.02, rng);
-	cout << "TIMES= "<<TIMES<<"\nBER= "<<BER<<endl;
+	cout << endl << endl <<"\nBER= "<<0.02<<endl;
 	test(ber);
 	delete ber;	
 
@@ -189,61 +172,103 @@ int main(){
 	delete rng;
     rng = new RNG(SEED);
     GilbertErrorModel *gil = new GilbertErrorModel(2, 0.001, rng);
-	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
+	cout << endl << endl << "GIL= "<<2<<", "<<0.001<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
 	test(gil);
 	delete gil;
 
 	delete rng;
     rng = new RNG(SEED);
     gil = new GilbertErrorModel(2, 0.002, rng);
-	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
-	test(gil);
+	cout << endl << endl << "GIL= "<<2<<", "<<0.002<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	test(gil);
 	delete gil;
 
 	delete rng;
 	rng = new RNG(SEED);
     gil = new GilbertErrorModel(2, 0.01, rng);
-	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
-	test(gil);
+	cout << endl << endl << "GIL= "<<2<<", "<<0.01<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	test(gil);
 	delete gil;
 
 	delete rng;
     rng = new RNG(SEED);
     gil = new GilbertErrorModel(3, 0.001, rng);
-	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
-	test(gil);
+	cout << endl << endl << "GIL= "<<3<<", "<<0.001<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	test(gil);
 	delete gil;
 
 	delete rng;
     rng = new RNG(SEED);
     gil = new GilbertErrorModel(3, 0.002, rng);
-	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
-	test(gil);
+	cout << endl << endl << "GIL= "<<3<<", "<<0.002<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	test(gil);
 	delete gil;
 
 	delete rng;
     rng = new RNG(SEED);
     gil = new GilbertErrorModel(3, 0.01, rng);
-	cout << "\nGIL= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
-	test(gil);
+	cout << endl << endl << "GIL= "<<3<<", "<<0.01<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	test(gil);
 	delete gil;
 
 	//teste periodico
 	delete rng;
     rng = new RNG(SEED);
     PeriodicBurstErrorModel *per = new PeriodicBurstErrorModel(1,16, rng);
-	//cout << "\nPER= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
+	cout << "\nPER= "<<1<<", "<<16<<endl;
 	test(per);
 	delete per;
 
 	delete rng;
 	rng = new RNG(SEED);
     per = new PeriodicBurstErrorModel(1,3,16,16, rng);
-	//cout << "\nPER= "<<GIL_BURST<<", "<<BER<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
-	test(per);
+	cout << "\nPER= "<<1<<", "<<3<<", "<<16<<", "<<16<<endl;	test(per);
 	delete per;
 
 	delete rng;
+}
 
-    return 0;
+void burstVerification(ErrorModel *model, int N) {
+	
+	long diff[50];
+	for (int x = 0; x<20; ++x) diff[x]=0;
+	
+	RNG *rng = new RNG(N);
+
+	for(int i=0; i<TIMES; ++i){
+		Packet *pkg = new Packet(N, rng);
+		//pkg->print('b');
+		Packet *pk2 = pkg->clone();
+
+		int err = model->injectErrors(pkg, true);//true=forceError
+
+		if (err>0) {
+		//pkg->print('b');
+ 			int k = 0;
+			for (uint16_t x =0; x<pkg->getLength()/2; ++x) {
+				uint16_t auxiliary = (pkg->getData()[x]^pk2->getData()[x]);			
+				for (uint16_t y =15; y<16;--y) {
+			            int d = uint16_t(pow(2, y));
+				    int r = auxiliary&d;
+				    //cout<<bitset<16>(auxiliary)<< "- "<<bitset<16>(d)<< "- "<<bitset<16>(r)<<endl;	
+				    if (r >0) k++;
+				    else { 
+					diff[k]++; 
+					if (k>0) diff[0]++;
+					k=0;					
+                    }
+				}
+			}			
+		}
+	}
+	for (int x=0; x<20;++x) cout<<"["<<x<<"] = "<<diff[x]<<endl;
+}
+
+int main(){
+
+	RNG* rng = new RNG(SEED);
+	
+	ErrorModel *ber = new BernoulliErrorModel(0.001, rng);
+	cout << endl << endl <<"\nBER= "<<0.001<<endl;
+	test(ber);
+	delete ber;	
+
+	delete rng;
+
+	return 0;
 }
