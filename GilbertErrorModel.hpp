@@ -1,6 +1,3 @@
-//Funcionamento do algoritmo está descrito no item 3 do paper citado anteriormente
-//How the algorithm works is described at the previous mentioned article
-
 #include "ErrorModel.hpp"
 #include "Packet.hpp"
 #include <iostream>
