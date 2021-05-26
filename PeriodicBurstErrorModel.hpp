@@ -13,9 +13,9 @@ public:
      
 PeriodicBurstErrorModel(uint16_t Nmin, uint16_t Nmax, uint16_t Tmin, uint16_t Tmax, RNG* rng_):ErrorModel(rng_) {
 	this->Nmin = Nmin;
-    this->Nmax = Nmax+1;
+    this->Nmax = Nmax;
     this->Tmin = Tmin;
-    this->Tmax = Tmax+1;
+    this->Tmax = Tmax;
     this->rng = rng_;
 }
 

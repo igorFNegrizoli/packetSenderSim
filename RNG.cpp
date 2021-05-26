@@ -18,7 +18,7 @@ uint16_t RNG::getSeed() {
     return seed;
 }
 
-uint16_t RNG::next(uint16_t max){	    
+uint16_t RNG::next(uint16_t max){
     return uint16_t(rand() % max);
 }
 
@@ -35,5 +35,6 @@ bool RNG::trueFalseProb(double limit){
 
 uint16_t RNG::next(uint16_t a, uint16_t b){
     if(a == b) return a;
+    if(b != 0xFFFF) b++;
     return (next(b-a)+a);
 }
