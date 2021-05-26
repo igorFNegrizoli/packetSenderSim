@@ -32,7 +32,7 @@ using namespace std;
 
 #define SEED 0x2021
 
-static void test(ErrorModel *model) {
+static void test(ErrorModel *model, bool forceError) {
 	int detectionFails[3]; //0=checksum, 1=crc 2=crc32 para contar o numero de falhas de detecção
 	int bitErrors; //para contar o numero de total bits invertidos
 	
@@ -67,7 +67,7 @@ static void test(ErrorModel *model) {
 		uint16_t _crc = crc.doCRC(pkg); 
 		uint32_t _crc32 = crc32.doCRC(pkg);
 		
-		int err = model->injectErrors(pkg, true);//true=forceError
+		int err = model->injectErrors(pkg, forceError);//true=forceError
 		bitErrors+=err;
 		devpad[i] = err;
 		if (err>0) {
@@ -141,7 +141,7 @@ void testRoutine(){
 	
 	ErrorModel *ber = new BernoulliErrorModel(0.001, rng);
 	cout << endl << endl <<"\nBER= "<<0.001<<endl;
-	test(ber);
+	test(ber, true);
 	delete ber;	
 
 	delete rng;
@@ -149,7 +149,7 @@ void testRoutine(){
 	
 	ber = new BernoulliErrorModel(0.002, rng);
 	cout << endl << endl <<"\nBER= "<<0.002<<endl;
-	test(ber);
+	test(ber, true);
 	delete ber;	
 
 	delete rng;
@@ -157,7 +157,7 @@ void testRoutine(){
 	
 	ber = new BernoulliErrorModel(0.01, rng);
 	cout << endl << endl <<"\nBER= "<<0.01<<endl;
-	test(ber);
+	test(ber, true);
 	delete ber;	
 
 	delete rng;
@@ -165,7 +165,7 @@ void testRoutine(){
 	
 	ber = new BernoulliErrorModel(0.02, rng);
 	cout << endl << endl <<"\nBER= "<<0.02<<endl;
-	test(ber);
+	test(ber, true);
 	delete ber;	
 
 	//teste gilbert com rajadas de 2 e 3 bits
@@ -173,37 +173,42 @@ void testRoutine(){
     rng = new RNG(SEED);
     GilbertErrorModel *gil = new GilbertErrorModel(2, 0.001, rng);
 	cout << endl << endl << "GIL= "<<2<<", "<<0.001<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
-	test(gil);
+	test(gil, true);
 	delete gil;
 
 	delete rng;
     rng = new RNG(SEED);
     gil = new GilbertErrorModel(2, 0.002, rng);
-	cout << endl << endl << "GIL= "<<2<<", "<<0.002<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	test(gil);
+	cout << endl << endl << "GIL= "<<2<<", "<<0.002<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	
+	test(gil, true);
 	delete gil;
 
 	delete rng;
 	rng = new RNG(SEED);
     gil = new GilbertErrorModel(2, 0.01, rng);
-	cout << endl << endl << "GIL= "<<2<<", "<<0.01<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	test(gil);
+	cout << endl << endl << "GIL= "<<2<<", "<<0.01<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	
+	test(gil, true);
 	delete gil;
 
 	delete rng;
     rng = new RNG(SEED);
     gil = new GilbertErrorModel(3, 0.001, rng);
-	cout << endl << endl << "GIL= "<<3<<", "<<0.001<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	test(gil);
+	cout << endl << endl << "GIL= "<<3<<", "<<0.001<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	
+	test(gil, true);
 	delete gil;
 
 	delete rng;
     rng = new RNG(SEED);
     gil = new GilbertErrorModel(3, 0.002, rng);
-	cout << endl << endl << "GIL= "<<3<<", "<<0.002<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	test(gil);
+	cout << endl << endl << "GIL= "<<3<<", "<<0.002<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	
+	test(gil, true);
 	delete gil;
 
 	delete rng;
     rng = new RNG(SEED);
     gil = new GilbertErrorModel(3, 0.01, rng);
-	cout << endl << endl << "GIL= "<<3<<", "<<0.01<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	test(gil);
+	cout << endl << endl << "GIL= "<<3<<", "<<0.01<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	
+	test(gil, true);
 	delete gil;
 
 	//teste periodico
@@ -211,13 +216,14 @@ void testRoutine(){
     rng = new RNG(SEED);
     PeriodicBurstErrorModel *per = new PeriodicBurstErrorModel(1,16, rng);
 	cout << "\nPER= "<<1<<", "<<16<<endl;
-	test(per);
+	test(per, true);
 	delete per;
 
 	delete rng;
 	rng = new RNG(SEED);
     per = new PeriodicBurstErrorModel(1,3,16,16, rng);
-	cout << "\nPER= "<<1<<", "<<3<<", "<<16<<", "<<16<<endl;	test(per);
+	cout << "\nPER= "<<1<<", "<<3<<", "<<16<<", "<<16<<endl;	
+	test(per, true);
 	delete per;
 
 	delete rng;
@@ -263,10 +269,19 @@ int main(){
 
 	RNG* rng = new RNG(SEED);
 	
-	ErrorModel *ber = new BernoulliErrorModel(0.001, rng);
-	cout << endl << endl <<"\nBER= "<<0.001<<endl;
-	test(ber);
-	delete ber;	
+	delete rng;
+    rng = new RNG(SEED);
+    GilbertErrorModel *gil = new GilbertErrorModel(2, 0.001, rng);
+	cout << endl << endl << "GIL= "<<2<<", "<<0.001<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
+	test(gil, false);
+	delete gil;
+	
+	delete rng;
+	rng = new RNG(SEED);
+    gil = new GilbertErrorModel(2, 0.01, rng);
+	cout << endl << endl << "GIL= "<<2<<", "<<0.01<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	
+	test(gil, false);
+	delete gil;
 
 	delete rng;
 
