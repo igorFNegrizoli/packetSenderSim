@@ -4,7 +4,8 @@
 #include <cstring>
 #include <cmath>
 
-#define CRC_32 0x04C11DB7 //Ethernet, MPED-2, PNG, Gzip
+//#define CRC_32 0x04C11DB7 //Ethernet, MPED-2, PNG, Gzip
+#define CRC_32 0xc9d204f5
 #define POLYNOMIAL CRC_32
 
 bool CRC32Bit::verifyCRC(Packet* packet, uint32_t crc){
