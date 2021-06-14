@@ -11,7 +11,6 @@
 #include <iostream>
 #include <iomanip>//setprecision setfixed
 #include <cmath> //pow
-
 #include <cstdint>
 #include <cstdlib>
 #include <time.h> 
@@ -120,12 +119,12 @@ static void test(ErrorModel *model, bool forceError) {
 	<<testsWithErrors<<"\t"
 	<<FIXED_FLOAT(2,(testsWithErrors*100.0)/TIMES)<<"\t"
     <<detectionFails[CHK]<<"\t"
-    <<FIXED_FLOAT(2,detectionFails[CHK]*100.0/testsWithErrors)<<"\t" //falhas de detecção checksum
+    <<FIXED_FLOAT(4,detectionFails[CHK]*100.0/testsWithErrors)<<"\t" //falhas de detecção checksum
 	<<detectionFails[CRC]<<"\t"
-	<<FIXED_FLOAT(2,detectionFails[CRC]*100.0/testsWithErrors)<<"\t"//falhas de detecção crc		
+	<<FIXED_FLOAT(4,detectionFails[CRC]*100.0/testsWithErrors)<<"\t"//falhas de detecção crc		
 	<<bothUndetected<<"\t"
 	<<detectionFails[CRC32]<<"\t"
-	<<FIXED_FLOAT(2,detectionFails[CRC32]*100.0/testsWithErrors)<<"\t"//falhas de detecção crc32
+	<<FIXED_FLOAT(4,detectionFails[CRC32]*100.0/testsWithErrors)<<"\t"//falhas de detecção crc32
 	<<both32Undetected<<endl;
     //for (int x=0; x<20;++x) cout<<"["<<x<<"] = "<<diff[x]<<endl;
         delete rng;
@@ -262,28 +261,28 @@ void burstVerification(ErrorModel *model, int N) {
 			}			
 		}
 	}
+
 	for (int x=0; x<20;++x) cout<<"["<<x<<"] = "<<diff[x]<<endl;
 }
 
 int main(){
-
+	
 	RNG* rng = new RNG(SEED);
-	
-	delete rng;
-    rng = new RNG(SEED);
-    GilbertErrorModel *gil = new GilbertErrorModel(2, 0.001, rng);
-	cout << endl << endl << "GIL= "<<2<<", "<<0.001<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
-	test(gil, false);
+    GilbertErrorModel *gil = new GilbertErrorModel(3, 0.01, rng);
+	cout << endl << endl << "GIL= "<<3<<", "<<0.01<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	
+	test(gil, true);
 	delete gil;
-	
 	delete rng;
-	rng = new RNG(SEED);
-    gil = new GilbertErrorModel(2, 0.01, rng);
-	cout << endl << endl << "GIL= "<<2<<", "<<0.01<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	
-	test(gil, false);
-	delete gil;
 
-	delete rng;
+	/*
+	Packet *pkg = new Packet(8, rng);
+	pkg->print('h');
+	cout<<endl;
+	uint8_t* u = new uint8_t[pkg->getLength()];
+	std::memcpy(u, pkg->getData(), pkg->getLength());//static_cast<const uint8_t*>(packet->getData());
+	for(int i=0; i<8; i++) cout<< +u[i]<<" ";
+	*/
+
 
 	return 0;
 }
