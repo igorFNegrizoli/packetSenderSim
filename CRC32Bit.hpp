@@ -7,7 +7,7 @@ class CRC32Bit {
     private:
       uint16_t table[256];
     public:
-      void generateTable();
+      void generateTable(uint32_t polynomial);
       bool verifyCRC(Packet* packet, uint32_t chk);
       uint32_t doCRC(Packet* packet);    
 };

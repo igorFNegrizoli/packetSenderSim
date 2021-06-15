@@ -40,7 +40,7 @@ static void test(ErrorModel *model, bool forceError) {
 	//CRC
 	CRC16Bit crc;
 	CRC32Bit crc32;
-	crc32.generateTable();
+	crc32.generateTable(0xc9d204f5);
 
 	long diff[50];
 	int devpad[TIMES];

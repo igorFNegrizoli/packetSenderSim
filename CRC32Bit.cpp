@@ -5,8 +5,8 @@
 #include <cmath>
 
 //#define CRC_32 0x04C11DB7 //Ethernet, MPED-2, PNG, Gzip
-#define CRC_32 0xc9d204f5
-#define POLYNOMIAL CRC_32
+//#define CRC_32 0xc9d204f5
+//#define POLYNOMIAL CRC_32
 
 bool CRC32Bit::verifyCRC(Packet* packet, uint32_t crc){
     int i, j;
@@ -14,12 +14,12 @@ bool CRC32Bit::verifyCRC(Packet* packet, uint32_t crc){
     return (crc==_crc);
 }
 
-void CRC32Bit::generateTable(){
+void CRC32Bit::generateTable(uint32_t polynomial){
 		for (uint32_t i = 0; i < 256; i++) {
 			uint32_t c = i;
 			for (size_t j = 0; j < 8; j++) {
 				if (c & 1) {
-					c = POLYNOMIAL ^ (c >> 1);
+					c = polynomial ^ (c >> 1);
 				}
 				else {
 					c >>= 1;
@@ -40,5 +40,3 @@ uint32_t CRC32Bit::doCRC(Packet* packet){
     delete [] u;
     return crc;
 }
-
-
