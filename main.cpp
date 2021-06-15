@@ -265,12 +265,77 @@ void burstVerification(ErrorModel *model, int N) {
 	for (int x=0; x<20;++x) cout<<"["<<x<<"] = "<<diff[x]<<endl;
 }
 
+static void comparePolynomials32(ErrorModel *model, uint32_t polyA, uint32_t polyB) {
+	int detectionFails[2]; //0 = PolyA, 1 = PolyB
+	int bitErrors; //para contar o numero de total bits invertidos
+	
+	CRC32Bit crc32A;
+	CRC32Bit crc32B;
+	crc32A.generateTable(polyA);
+	crc32B.generateTable(polyB);
+
+	long diff[50];
+	int devpad[TIMES];
+	for (int x = 0; x<20; ++x) diff[x]=0;
+	
+	cout << "\nN(B)\tf(bit)\tDesvPad\t%\t" << hex << polyA << "\t" << hex << polyB << " \tBOTH" << endl << dec;
+	for (int N=pow(2,3); N<pow(2,11); N*=2) {
+		detectionFails[0] = 0;
+		detectionFails[1] = 0;
+		bitErrors = 0;
+	RNG *rng = new RNG(N);
+	for (int i=0; i<TIMES; ++i) devpad[i]=0;
+
+	int both32Undetected = 0;
+	long testsWithErrors = 0; //execuções com erros injetados para cada cenario
+	for(int i=0; i<TIMES; ++i){
+		Packet *pkg = new Packet(N, rng);
+
+		uint32_t _crcA = crc32A.doCRC(pkg);
+		uint32_t _crcB = crc32B.doCRC(pkg);
+		
+		int err = model->injectErrors(pkg, true);//true=forceError
+		bitErrors+=err;
+		devpad[i] = err;
+
+		bool crcA_undetect = false;
+		if (err>0 && crc32A.verifyCRC(pkg, _crcA)) {
+		    crcA_undetect = true;
+		    detectionFails[0]++;
+		} 		
+	        
+		if (err>0 && crc32B.verifyCRC(pkg, _crcB)) {
+		    if (crcA_undetect == true) both32Undetected++;                    
+		    detectionFails[1]++;
+		}		
+		delete pkg;
+	}
+	double errp = (double)bitErrors/TIMES;
+	//desvio padrao
+	double sum = 0.0;
+	for (long x=0; x<TIMES; ++x)
+	    sum+= pow(devpad[x]-errp, 2);
+	double dpad = sqrt(sum/TIMES);
+
+	cout<<N<<"\t"
+    <<FIXED_FLOAT(2,errp)<<"\t" //media de bits invertidos
+	<<FIXED_FLOAT(2,dpad)<<"\t" //devpad
+    <<FIXED_FLOAT(4,(errp*100.0)/(N*8))<<"\t" //% bits invertidos no pacote
+    <<detectionFails[0]<<"\t"
+	<<detectionFails[1]<<"\t\t"
+	<<both32Undetected<<endl;
+        delete rng;
+	
+	}//end for N
+		
+}
+
 int main(){
 	
 	RNG* rng = new RNG(SEED);
     GilbertErrorModel *gil = new GilbertErrorModel(3, 0.01, rng);
 	cout << endl << endl << "GIL= "<<3<<", "<<0.01<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	
-	test(gil, true);
+	comparePolynomials32(gil, 0x04C11DB7, 0xc9d204f5);
 	delete gil;
 	delete rng;
 
