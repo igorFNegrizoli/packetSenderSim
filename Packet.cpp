@@ -69,7 +69,7 @@ uint16_t Packet::getLength(){
 }
 
 void Packet::print(char mode){
-    std::cout << "pkg len: " << this->length <<" bytes"<< std::endl;
+    std::cout << "pkg len: " << std::dec <<this->length <<" bytes"<< std::endl;
     switch(mode){
         case 'h':
             for(int i=0;i<(this->length/2);++i) std::cout << std::hex << this->data[i] << " ";
