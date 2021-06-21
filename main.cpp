@@ -20,7 +20,8 @@
 #define CRC32 2
 
 #define DEBUG false
-#define DEBUGCRC16 true
+#define DEBUGCRC16 false
+#define DEBUGCRC32 true
 
 #define FIXED_FLOAT(p, x) fixed << setprecision(p) <<(x)
 
@@ -102,9 +103,13 @@ static void test(ErrorModel *model, bool forceError) {
 		}
 
 		if (err>0 && crc32.verifyCRC(pkg, _crc32)) {
-		   if (DEBUG) {
+		   if (DEBUGCRC32) {
 			cout << "CRC32 match - detection failed" << endl;
-			pkg->print('b');
+			pkgBefore->print('h');
+			pkg->print('h');
+			cout << endl << crc.doCRC(pkg) << " " 
+			<< crc.doCRC(pkgBefore) << " "
+			<<_crc << endl;
 		   }
 		   if (chkUndetect == true) both32Undetected++;                    
 		   detectionFails[CRC32]++;
