@@ -20,6 +20,7 @@
 #define CRC32 2
 
 #define DEBUG false
+#define DEBUGCRC16 true
 
 #define FIXED_FLOAT(p, x) fixed << setprecision(p) <<(x)
 
@@ -47,7 +48,7 @@ static void test(ErrorModel *model, bool forceError) {
 	for (int x = 0; x<20; ++x) diff[x]=0;
 	
 	cout << "\nN(B)\tf(bit)\tDesvPad\t%\tFY\t%\tCHK\t%\tCRC16\t%\tBOTH\tCRC32\t%\tBOTH" << endl;
-	for (int N=pow(2,3); N<pow(2,11); N*=2) {
+	for (int N=pow(2,3); N<pow(2,5); N*=2) {
 		detectionFails[CHK] = 0;
 		detectionFails[CRC] = 0;
 		detectionFails[CRC32] = 0;
@@ -58,7 +59,8 @@ static void test(ErrorModel *model, bool forceError) {
 	int bothUndetected = 0, both32Undetected = 0; //numero de vezes que chk e crc falharam juntos
 	long testsWithErrors = 0; //execuções com erros injetados para cada cenario
 	for(int i=0; i<TIMES; ++i){
-		Packet *pkg = new Packet(N, rng);
+		Packet *pkg = new Packet(N, false);
+		Packet *pkgBefore = pkg->clone();
 		//pkg->print('b');
 
 
@@ -87,9 +89,13 @@ static void test(ErrorModel *model, bool forceError) {
 		} 		
 	        
 		if (err>0 && crc.verifyCRC(pkg, _crc)) {
-		   if (DEBUG) {
-			cout << "CRC match - detection failed" << endl;
-			pkg->print('b');
+		   if (DEBUGCRC16) {
+			cout << endl << "CRC match - detection failed" << endl;
+			pkgBefore->print('h');
+			pkg->print('h');
+			cout << endl << crc.doCRC(pkg) << " " 
+			<< crc.doCRC(pkgBefore) << " "
+			<<_crc << endl;
 		   }
                    if (chkUndetect == true) bothUndetected++;
 		   detectionFails[CRC]++;
@@ -112,7 +118,7 @@ static void test(ErrorModel *model, bool forceError) {
 	    sum+= pow(devpad[x]-errp, 2);
 	double dpad = sqrt(sum/TIMES);
 
-	cout<<N<<"\t"
+	cout<< dec<<N<<"\t"
     <<FIXED_FLOAT(2,errp)<<"\t" //media de bits invertidos
 	<<FIXED_FLOAT(2,dpad)<<"\t" //devpad
     <<FIXED_FLOAT(4,(errp*100.0)/(N*8))<<"\t" //% bits invertidos no pacote
@@ -333,10 +339,10 @@ static void comparePolynomials32(ErrorModel *model, uint32_t polyA, uint32_t pol
 int main(){
 	
 	RNG* rng = new RNG(SEED);
-    GilbertErrorModel *gil = new GilbertErrorModel(3, 0.01, rng);
-	cout << endl << endl << "GIL= "<<3<<", "<<0.01<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	
-	comparePolynomials32(gil, 0x04C11DB7, 0xc9d204f5);
-	delete gil;
+    PeriodicBurstErrorModel *per = new PeriodicBurstErrorModel(1,3,16,16, rng);
+	cout << endl << "PER = 1,3,16,16" <<endl;	
+	test(per, true);
+	delete per;
 	delete rng;
 
 	/*
