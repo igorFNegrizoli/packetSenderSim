@@ -1,11 +1,14 @@
 #ifndef Included_RNG_HPP
 #define Included_RNG_HPP
 #include <cstdint>
+#include <random>
 
 class RNG {
 
    private:
         uint16_t seed;
+        std::mt19937 gen;
+        std::uniform_int_distribution<uint16_t>* dist;
 	
    public:
 	RNG();
@@ -14,6 +17,7 @@ class RNG {
 
 	uint16_t next(uint16_t max);
 	uint16_t next(uint16_t a, uint16_t b);
+	//void attSeed();
 
 	double randZeroToOne();
 	bool trueFalseProb(double limit);

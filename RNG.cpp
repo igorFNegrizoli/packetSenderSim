@@ -3,20 +3,24 @@
 #include <cstdlib>
 #include <time.h> 
 #include <iostream>
+#include <random>
 
 RNG::RNG() {
    this->seed = (uint16_t)clock();
-   srand (seed);
+   //srand(seed);
 }
 
 RNG::RNG(uint16_t seed) {
-   this->seed = seed;
-   srand (seed);
+  this->seed = seed;
+  this->gen = std::mt19937(seed);
+  this->dist = nullptr;
+  //srand(seed);
 }
 
 uint16_t RNG::getSeed() {
     return seed;
 }
+
 
 uint16_t RNG::next(uint16_t max){
     return uint16_t(rand() % max);
@@ -34,7 +38,14 @@ bool RNG::trueFalseProb(double limit){
 }
 
 uint16_t RNG::next(uint16_t a, uint16_t b){
-    if(a == b) return a;
-    if(b != 0xFFFF) b++;
-    return (next(b-a)+a);
+    if(this->dist == nullptr){
+      this->dist = new std::uniform_int_distribution<uint16_t>(a, b);
+    }
+    //std::mt19937 genObj = std::mt19937(* gen);
+    std::uniform_int_distribution<uint16_t> distObj = std::uniform_int_distribution<uint16_t>(* dist);
+    return distObj(this->gen);
 }
+
+//void RNG::attSeed(){
+//  srand(getSeed());
+//}
