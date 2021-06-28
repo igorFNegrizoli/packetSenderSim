@@ -1,3 +1,4 @@
 exec
 old/#testbench.cpp#
 *.swp
+testResults.txt
