@@ -55,7 +55,7 @@ Packet::Packet(uint16_t len, bool zeroOrOne){
         }    
     }else{
         for(uint16_t i=0; i<len/2; ++i){
-            data[i] = 0;
+            data[i] = 0x0000;
         }
     }
 }

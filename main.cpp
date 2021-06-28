@@ -13,15 +13,17 @@
 #include <cmath> //pow
 #include <cstdint>
 #include <cstdlib>
-#include <time.h> 
+#include <time.h>
+#include <random>
 
 #define CHK 0
 #define CRC 1
 #define CRC32 2
 
 #define DEBUG false
+#define DEBUGCHK16 false
 #define DEBUGCRC16 false
-#define DEBUGCRC32 true
+#define DEBUGCRC32 false
 
 #define FIXED_FLOAT(p, x) fixed << setprecision(p) <<(x)
 
@@ -49,7 +51,7 @@ static void test(ErrorModel *model, bool forceError) {
 	for (int x = 0; x<20; ++x) diff[x]=0;
 	
 	cout << "\nN(B)\tf(bit)\tDesvPad\t%\tFY\t%\tCHK\t%\tCRC16\t%\tBOTH\tCRC32\t%\tBOTH" << endl;
-	for (int N=pow(2,3); N<pow(2,5); N*=2) {
+	for (int N=pow(2,3); N<pow(2,11); N*=2) {
 		detectionFails[CHK] = 0;
 		detectionFails[CRC] = 0;
 		detectionFails[CRC32] = 0;
@@ -60,15 +62,14 @@ static void test(ErrorModel *model, bool forceError) {
 	int bothUndetected = 0, both32Undetected = 0; //numero de vezes que chk e crc falharam juntos
 	long testsWithErrors = 0; //execuções com erros injetados para cada cenario
 	for(int i=0; i<TIMES; ++i){
-		Packet *pkg = new Packet(N, false);
+		Packet *pkg = new Packet(N, rng);
 		Packet *pkgBefore = pkg->clone();
 		//pkg->print('b');
-
 
 		uint16_t _chk = check.doChecksum(pkg);		
 		uint16_t _crc = crc.doCRC(pkg); 
 		uint32_t _crc32 = crc32.doCRC(pkg);
-		
+
 		int err = model->injectErrors(pkg, forceError);//true=forceError
 		bitErrors+=err;
 		devpad[i] = err;
@@ -76,14 +77,20 @@ static void test(ErrorModel *model, bool forceError) {
 			testsWithErrors++;
 						
 		}
-                
-
-		if (DEBUG) cout<<"err: "<<err<<endl;
+   
+		if (DEBUG){
+			cout << endl <<"pkgBefore: "<< endl;
+			pkgBefore->print('b');
+			cout<<"pkg: "<< endl;
+			pkg->print('b');
+		}
 		bool chkUndetect = false;
 		if (err>0 && check.verifyChecksum(pkg, _chk)) {
-		   if (DEBUG) {
+		   if (DEBUGCHK16) {
 			cout << "CHK match - detection failed" << endl;
-		   	pkg->print('b');
+			cout << check.doChecksum(pkg) << " " 
+			<< check.doChecksum(pkgBefore) << " "
+			<<_chk << endl;
 		   }
 		   chkUndetect = true;
 		   detectionFails[CHK]++;
@@ -91,10 +98,8 @@ static void test(ErrorModel *model, bool forceError) {
 	        
 		if (err>0 && crc.verifyCRC(pkg, _crc)) {
 		   if (DEBUGCRC16) {
-			cout << endl << "CRC match - detection failed" << endl;
-			pkgBefore->print('h');
-			pkg->print('h');
-			cout << endl << crc.doCRC(pkg) << " " 
+			cout << endl << "CRC16 match - detection failed" << endl;
+			cout << crc.doCRC(pkg) << " " 
 			<< crc.doCRC(pkgBefore) << " "
 			<<_crc << endl;
 		   }
@@ -105,16 +110,15 @@ static void test(ErrorModel *model, bool forceError) {
 		if (err>0 && crc32.verifyCRC(pkg, _crc32)) {
 		   if (DEBUGCRC32) {
 			cout << "CRC32 match - detection failed" << endl;
-			pkgBefore->print('h');
-			pkg->print('h');
-			cout << endl << crc.doCRC(pkg) << " " 
-			<< crc.doCRC(pkgBefore) << " "
-			<<_crc << endl;
+			cout << crc32.doCRC(pkg) << " " 
+			<< crc32.doCRC(pkgBefore) << " "
+			<<_crc32 << endl;
 		   }
 		   if (chkUndetect == true) both32Undetected++;                    
 		   detectionFails[CRC32]++;
 		}		
 		delete pkg;
+		delete pkgBefore;
 	}
 	double errp = (double)bitErrors/TIMES;
 	//desvio padrao
@@ -342,13 +346,43 @@ static void comparePolynomials32(ErrorModel *model, uint32_t polyA, uint32_t pol
 }
 
 int main(){
+
+	//srand(SEED);
 	
 	RNG* rng = new RNG(SEED);
-    PeriodicBurstErrorModel *per = new PeriodicBurstErrorModel(1,3,16,16, rng);
-	cout << endl << "PER = 1,3,16,16" <<endl;	
-	test(per, true);
-	delete per;
+	
+	ErrorModel *ber = new BernoulliErrorModel(0.001, rng);
+	cout << endl << endl <<"\nBER= "<<0.001<<endl;
+	test(ber, true);
+	delete ber;	
 	delete rng;
+	
+	
+    /*
+    RNG* rng = new RNG(SEED);
+    for(int i=0; i<10; i++){
+    	uint16_t aaargh = rng->next(16, 16);
+    	cout << " " << hex << aaargh << endl;
+    	aaargh = rng->next(0, 3);
+    	cout << " " << hex << aaargh << endl << endl;
+    }
+    */
+    
+    /*
+    std::mt19937* gen = new std::mt19937(SEED); //Standard mersenne_twister_engine seeded with rd()
+    std::uniform_int_distribution<uint16_t>* dist = new std::uniform_int_distribution<uint16_t>(0x0000, 0xffff);
+ 	std::mt19937 genObj = std::mt19937(* gen);
+  	std::uniform_int_distribution<uint16_t> distObj = std::uniform_int_distribution<uint16_t>(* dist);
+
+    for (int n=0; n<10; ++n){
+
+
+ 		
+ 		std::cout << distObj(genObj) << ' ';
+    }
+        
+    std::cout << '\n';
+    */
 
 	/*
 	Packet *pkg = new Packet(8, rng);

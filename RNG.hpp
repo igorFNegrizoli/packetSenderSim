@@ -8,7 +8,6 @@ class RNG {
    private:
         uint16_t seed;
         std::mt19937 gen;
-        std::uniform_int_distribution<uint16_t>* dist;
 	
    public:
 	RNG();
