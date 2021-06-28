@@ -45,7 +45,3 @@ uint16_t RNG::next(uint16_t a, uint16_t b){
     std::uniform_int_distribution<uint16_t> distObj = std::uniform_int_distribution<uint16_t>(* dist);
     return distObj(this->gen);
 }
-
-//void RNG::attSeed(){
-//  srand(getSeed());
-//}
