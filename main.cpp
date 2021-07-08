@@ -44,7 +44,7 @@ static void test(ErrorModel *model, bool forceError) {
 	//CRC
 	CRC16Bit crc;
 	CRC32Bit crc32;
-	crc32.generateTable(0xc9d204f5);
+	crc32.generateTable(0x04c11db7);
 
 	long diff[50];
 	int devpad[TIMES];
@@ -347,42 +347,47 @@ static void comparePolynomials32(ErrorModel *model, uint32_t polyA, uint32_t pol
 
 int main(){
 
-	//srand(SEED);
-	
 	RNG* rng = new RNG(SEED);
-	
-	ErrorModel *ber = new BernoulliErrorModel(0.001, rng);
+    BernoulliErrorModel *ber = new BernoulliErrorModel(0.001, rng);
 	cout << endl << endl <<"\nBER= "<<0.001<<endl;
-	test(ber, true);
-	delete ber;	
+	test(ber, false);
+	delete ber;
 	delete rng;
-	
-	
-    /*
-    RNG* rng = new RNG(SEED);
-    for(int i=0; i<10; i++){
-    	uint16_t aaargh = rng->next(16, 16);
-    	cout << " " << hex << aaargh << endl;
-    	aaargh = rng->next(0, 3);
-    	cout << " " << hex << aaargh << endl << endl;
-    }
-    */
-    
-    /*
-    std::mt19937* gen = new std::mt19937(SEED); //Standard mersenne_twister_engine seeded with rd()
-    std::uniform_int_distribution<uint16_t>* dist = new std::uniform_int_distribution<uint16_t>(0x0000, 0xffff);
- 	std::mt19937 genObj = std::mt19937(* gen);
-  	std::uniform_int_distribution<uint16_t> distObj = std::uniform_int_distribution<uint16_t>(* dist);
 
-    for (int n=0; n<10; ++n){
+	rng = new RNG(SEED);
+    ber = new BernoulliErrorModel(0.01, rng);
+	cout << endl << endl <<"\nBER= "<<0.01<<endl;
+	test(ber, false);
+	delete ber;
+	delete rng;
 
+	rng = new RNG(SEED);
+    GilbertErrorModel *gil = new GilbertErrorModel(2, 0.001, rng);
+	cout << endl << endl << "GIL= "<<2<<", "<<0.001<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;
+	test(gil, false);
+	delete gil;
+	delete rng;
 
- 		
- 		std::cout << distObj(genObj) << ' ';
-    }
-        
-    std::cout << '\n';
-    */
+	rng = new RNG(SEED);
+    gil = new GilbertErrorModel(2, 0.01, rng);
+	cout << endl << endl << "GIL= "<<2<<", "<<0.01<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	
+	test(gil, false);
+	delete gil;
+	delete rng;
+
+	rng = new RNG(SEED);
+    PeriodicBurstErrorModel *per = new PeriodicBurstErrorModel(1,16, rng);
+	cout << "\nPER= "<<1<<", "<<16<<endl;
+	test(per, false);
+	delete per;
+	delete rng;
+
+	rng = new RNG(SEED);
+    per = new PeriodicBurstErrorModel(1,3,16,16, rng);
+	cout << "\nPER= "<<1<<", "<<3<<", "<<16<<", "<<16<<endl;	
+	test(per, false);
+	delete per;
+	delete rng;
 
 	/*
 	Packet *pkg = new Packet(8, rng);
