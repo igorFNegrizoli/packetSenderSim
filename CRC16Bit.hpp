@@ -5,8 +5,13 @@
 #include "VerificationAlgorithm.hpp"
 
 class CRC16Bit: public VerificationAlgorithm {
+private:
+    uint16_t crc16;
 public:
     public:
+    CRC16Bit(uint16_t crc16_){
+        crc16 = crc16_;
+    }
     bool verifyCRC(Packet* packet, uint16_t chk);
     uint16_t doCRC(Packet* packet);
     uint32_t generateVerificationCode(Packet* packet){

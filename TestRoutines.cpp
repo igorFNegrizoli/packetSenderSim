@@ -144,7 +144,7 @@ void TestRoutines::paperTestTemplate(ErrorModel *model, uint32_t CRC_32, bool fo
 	int bitErrors; //para contar o numero de total bits invertidos
 	
 	Checksum16Bit check;
-	CRC16Bit crc;
+	CRC16Bit crc(0x1021);
 	CRC32Bit crc32;
 	crc32.generateTable(CRC_32);
 

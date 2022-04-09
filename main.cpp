@@ -148,9 +148,10 @@ int main(){
 	*/
 
 	RNG* rng = new RNG(SEED);
-	VerificationAlgorithm* alg = new Checksum16Bit();
+	VerificationAlgorithm* alg = new CRC16Bit(0x1021);
+	GilbertErrorModel *gil = new GilbertErrorModel(3, 0.01, rng);
 	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
-	test->executionTimeTest(rng, alg);
+	test->paperTestTemplate(gil, 0x04C11DB7, true);
 
 	return 0;
 }
