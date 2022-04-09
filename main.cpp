@@ -128,7 +128,7 @@ int main(){
 	delete rng;
 	*/
 
-	execTestRoutine();
+	//execTestRoutine();
 	
 	/*
 	Packet *pkg = new Packet(8, rng);
@@ -146,6 +146,11 @@ int main(){
 	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
 	test->comparePolynomials32(gil, 0x04C11DB7, 0xc9d204f5);
 	*/
+
+	RNG* rng = new RNG(SEED);
+	VerificationAlgorithm* alg = new Checksum16Bit();
+	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
+	test->executionTimeTest(rng, alg);
 
 	return 0;
 }

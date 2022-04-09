@@ -86,13 +86,16 @@ void TestRoutines::comparePolynomials32(ErrorModel *model, uint32_t polyA, uint3
 void TestRoutines::executionTimeTest(RNG* rng, VerificationAlgorithm* alg){
 	for (int N=pow(2,3); N<pow(2,11); N*=2){
 		long unsigned int mediaTempo = 0;
+		//std::chrono::high_resolution_clock mediaTempo;
 
-		for(uint16_t i=0; i<times; i++){
+		for(uint32_t i=0; i<times; i++){
+			//if(i%50000 == 0) std::cout << "packet number: " << i << std::endl;
 			Packet *pkg = new Packet(N, rng);
 			auto start = std::chrono::high_resolution_clock::now();	
 			alg->generateVerificationCode(pkg);
 			auto stop = std::chrono::high_resolution_clock::now();
-			//mediaTempo += std::chrono::duration_cast<std::chrono::milliseconds>(stop-start).count();
+			mediaTempo += std::chrono::duration_cast<std::chrono::microseconds>(stop-start).count();
+			//mediaTempo = mediaTempo + stop - start;
 			delete pkg;
 		}
 		std::cout << N << " - " << mediaTempo << std::endl;
