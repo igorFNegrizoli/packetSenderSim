@@ -116,7 +116,7 @@ void execTestRoutine(){
 	delete rng;
 }
 
-
+#include <bitset>
 int main(){
 	
 	/*
@@ -147,11 +147,18 @@ int main(){
 	test->comparePolynomials32(gil, 0x04C11DB7, 0xc9d204f5);
 	*/
 
+	/*
 	RNG* rng = new RNG(SEED);
-	VerificationAlgorithm* alg = new CRC16Bit(0x1021);
+	//VerificationAlgorithm* alg = new CRC16Bit(0x1021);
 	GilbertErrorModel *gil = new GilbertErrorModel(3, 0.01, rng);
 	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
 	test->paperTestTemplate(gil, 0x04C11DB7, true);
+	*/
+
+	RNG* rng = new RNG(SEED);
+	VerificationAlgorithm* alg = new Checksum16Bit();
+	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
+	test->executionTimeTest(rng, alg);
 
 	return 0;
 }
