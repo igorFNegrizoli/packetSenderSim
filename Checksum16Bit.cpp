@@ -2,14 +2,9 @@
 //#include "Packet.hpp"
 #include <iostream>
 #include <bitset>
-using namespace std;
 
 bool Checksum16Bit::verifyChecksum(Packet* packet, uint16_t chk){
-    //packet.print('b');
-    //cout<<"verify:"<<chk<<endl;
-    uint16_t _chk = this->doChecksum(packet);
-    //cout<<"_chk"<<endl;
-    return(_chk == chk);
+    return(this->doChecksum(packet); == chk);
 }
 
 uint16_t Checksum16Bit::doChecksum(Packet* packet){ 
