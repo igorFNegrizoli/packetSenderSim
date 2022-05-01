@@ -24,16 +24,16 @@ Packet::Packet(uint16_t len){
 Packet::Packet(uint16_t len, RNG* rng_){
     this->length = len;
     this->rng = rng_;
-    this->data = new uint16_t[len/2];//=len/2 words 16 bits
-    for(uint16_t i=0; i<len/2; ++i){
-        this->data[i] = this->rng->next(0x0000, 0xffff);
+    this->data = (uint8_t*)malloc(len);
+    for(uint16_t i=0; i<len; ++i){
+        this->data[i] = this->rng->next(0x00, 0xff);
     }
 }
 
 Packet* Packet::clone() {
     //RNG *rng = new RNG(this->rng->getSeed());
-    Packet *p = new Packet(this->length, this->rng);
-    for (int i=0; i<p->length/2; ++i) {
+    Packet *p = new Packet(this->length, this->rng); //essa chamada faz as atribuiçoes aleatorias desnecessariamente, tem que arrumar
+    for (int i=0; i<p->length; ++i) {
 	p->data[i] = this->data[i];
     }
     return p;
@@ -48,19 +48,19 @@ Constructs a packet with only zeroes or only ones.
 */
 Packet::Packet(uint16_t len, bool zeroOrOne){
     this->length = len;
-    this->data = new uint16_t(len/2);
+    this->data = (uint8_t*)malloc(len);;
     if (zeroOrOne){
-        for(uint16_t i=0; i<len/2; ++i){
-            data[i] = 0xffff;
+        for(uint16_t i=0; i<len; ++i){
+            data[i] = 0xff;
         }    
     }else{
-        for(uint16_t i=0; i<len/2; ++i){
-            data[i] = 0;
+        for(uint16_t i=0; i<len; ++i){
+            data[i] = 0x00;
         }
     }
 }
 
-uint16_t* Packet::getData(){
+uint8_t* Packet::getData(){
     return this->data;
 }
 
@@ -72,10 +72,10 @@ void Packet::print(char mode){
     std::cout << "pkg len: " << this->length <<" bytes"<< std::endl;
     switch(mode){
         case 'h':
-            for(int i=0;i<(this->length/2);++i) std::cout << std::hex << this->data[i] << " ";
+            for(int i=0;i<(this->length);++i) std::cout << std::hex << (int)this->data[i] << " ";
                 break;
         case 'b':
-            for(int i=0;i<(this->length/2);++i) std::cout << std::bitset<16>(this->data[i]) << " ";
+            for(int i=0;i<(this->length);++i) std::cout << std::bitset<8>((int)this->data[i]) << " ";
             break;
     }
     std::cout << std::endl;
@@ -83,28 +83,23 @@ void Packet::print(char mode){
 
 //Flippa o bit na posição "bitpos" do packet
 //Flips the "bitpos" bit of the data packet
-uint16_t Packet::injectErrorInChunk(uint16_t bit_pos){    
-    uint16_t sizeOfPacketInBits = this->length * 8;
+uint16_t Packet::injectErrorInChunk(uint64_t bit_pos){    
+    uint64_t sizeOfPacketInBits = this->length * 8;
     if(bit_pos >= sizeOfPacketInBits) {
 	std::cout << "WARNING: injectErrorInChunk -> bit_pos: "<<bit_pos<< "> size of packet: "<<sizeOfPacketInBits << std::endl;
 	return 0;
     } 
     //determinar o indice no array de data
-    int word = bit_pos / 16.0;
-    int pos  = bit_pos % 16;
-    //std::cout << bit_pos << " "<<word<<", "<<pos<<std::endl;
-    uint16_t auxiliary = uint16_t(pow(2,pos));
-    //std::cout << auxiliary<<std::endl;
-    //std::cout << std::bitset<16>(this->data[word]) <<std::endl;	
-    this->data[word] ^= auxiliary;
-    //std::cout << std::bitset<16>(this->data[word]) <<std::endl;
+    int word = bit_pos / 8.0;
+    int pos  = bit_pos % 8;
+    this->data[word] ^= uint8_t(pow(2,pos));
     return 1;
 }
 
 //Flippa os bits [bit_start, bit_end] do packet
 //Flips the [bit_start, bit_end] bits of the data packet
-uint16_t Packet::injectErrorInChunk(uint16_t bit_start, uint16_t bit_end){
-    uint16_t sizeOfPacketInBits = this->length * 8;
+uint16_t Packet::injectErrorInChunk(uint64_t bit_start, uint64_t bit_end){
+    uint64_t sizeOfPacketInBits = this->length * 8;
     if(bit_start > bit_end) {
 	std::cout << "WARNING: injectErrorInChunk -> bit_start: "<<bit_start<<" > bit_end: "<<bit_end << std::endl;
 	return 0;
@@ -118,7 +113,7 @@ uint16_t Packet::injectErrorInChunk(uint16_t bit_start, uint16_t bit_end){
 	std::cout << "WARNING: injectErrorInChunk -> bit_end: "<<bit_end<<" set with size of packet: " <<sizeOfPacketInBits << std::endl;
     }
     uint16_t numberOfErrors = 0; 
-    for (uint16_t pos = bit_start; pos<=bit_end; pos++) {
+    for (uint64_t pos = bit_start; pos<=bit_end; pos++) {
 	numberOfErrors+=injectErrorInChunk(pos);
     }
     return numberOfErrors;

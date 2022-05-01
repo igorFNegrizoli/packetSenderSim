@@ -155,10 +155,36 @@ int main(){
 	test->paperTestTemplate(gil, 0x04C11DB7, true);
 	*/
 
+	/*
 	RNG* rng = new RNG(SEED);
 	VerificationAlgorithm* alg = new Checksum16Bit();
 	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
 	test->executionTimeTest(rng, alg);
+	*/
+
+	RNG* rng = new RNG(SEED);
+	Packet *pkg = new Packet(8, rng);
+	pkg->print('h');
+	VerificationAlgorithm* alg = new Checksum16Bit();
+	std::cout << alg->generateVerificationCode(pkg) << std::endl;
+	
+
+	/*
+	uint8_t* arr = (uint8_t*)malloc(8);
+	uint16_t* arr16 = (uint16_t*)arr;
+
+	for(uint8_t i=0; i<8; i++) arr[i] = i;
+	for(uint8_t i=0; i<8; i++) std::cout << (int)arr[i];
+
+	std::cout << std::endl;
+
+	for(uint16_t i=0; i<4; i++) arr[i] = i+10;
+	for(uint16_t i=0; i<4; i++) std::cout << (int)arr[i];
+
+	std::cout << std::endl;
+
+	for(uint8_t i=0; i<8; i++) std::cout << (int)arr[i];
+	*/
 
 	return 0;
 }

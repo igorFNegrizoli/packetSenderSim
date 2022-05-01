@@ -10,7 +10,7 @@
 class Packet{
     private:
         uint16_t length;
-        uint16_t* data;
+        uint8_t* data;
 	RNG* rng;
     public:
         Packet();
@@ -19,7 +19,7 @@ class Packet{
 	Packet(uint16_t len, RNG *rng);
         Packet(uint16_t len, bool zeroOrOne);
 
-	uint16_t* getData();
+	uint8_t* getData();
         uint16_t getLength();
 
 	Packet* clone();
@@ -27,8 +27,8 @@ class Packet{
         void print(char mode);
 
 	//retornam quantos bits foram afetados
-        uint16_t injectErrorInChunk(uint16_t bit_pos);
-        uint16_t injectErrorInChunk(uint16_t bit_start, uint16_t bit_end);
+        uint16_t injectErrorInChunk(uint64_t bit_pos);
+        uint16_t injectErrorInChunk(uint64_t bit_start, uint64_t bit_end);
 
         ~Packet();
 };
