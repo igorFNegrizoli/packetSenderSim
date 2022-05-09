@@ -162,29 +162,30 @@ int main(){
 	test->executionTimeTest(rng, alg);
 	*/
 
-	RNG* rng = new RNG(SEED);
-	Packet *pkg = new Packet(8, rng);
-	pkg->print('h');
-	VerificationAlgorithm* alg = new Checksum16Bit();
-	std::cout << alg->generateVerificationCode(pkg) << std::endl;
-	
-
 	/*
+	RNG* rng = new RNG(SEED);
+	Packet *pkg = new Packet(512, rng);
+	//pkg->print('h');
+	//CRC32Bit* alg = new CRC32Bit(0x04C11DB7);
+	//std::cout << std::hex << alg->generateVerificationCode(pkg) << std::endl;
+	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
+	GilbertErrorModel *gil = new GilbertErrorModel(3, 0.01, rng);
+	test->comparePolynomials32(gil, 0x04C11DB7, 0xC9D204F5);
+	*/
+
+	
 	uint8_t* arr = (uint8_t*)malloc(8);
 	uint16_t* arr16 = (uint16_t*)arr;
 
 	for(uint8_t i=0; i<8; i++) arr[i] = i;
-	for(uint8_t i=0; i<8; i++) std::cout << (int)arr[i];
+	for(uint8_t i=0; i<8; i++) std::cout << std::hex << (int)arr[i] << " ";
 
 	std::cout << std::endl;
 
-	for(uint16_t i=0; i<4; i++) arr[i] = i+10;
-	for(uint16_t i=0; i<4; i++) std::cout << (int)arr[i];
+	for(uint8_t i=0; i<4; i++) std::cout << (int)arr16[i] << " ";
 
 	std::cout << std::endl;
-
-	for(uint8_t i=0; i<8; i++) std::cout << (int)arr[i];
-	*/
+	
 
 	return 0;
 }

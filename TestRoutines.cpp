@@ -23,10 +23,8 @@ void TestRoutines::comparePolynomials32(ErrorModel *model, uint32_t polyA, uint3
 	int detectionFails[2]; //0 = PolyA, 1 = PolyB
 	int bitErrors; //para contar o numero de total bits invertidos
 	
-	CRC32Bit crc32A;
-	CRC32Bit crc32B;
-	crc32A.generateTable(polyA);
-	crc32B.generateTable(polyB);
+	CRC32Bit crc32A(polyA);
+	CRC32Bit crc32B(polyB);
 
 	long diff[50];
 	int devpad[times];
@@ -145,8 +143,7 @@ void TestRoutines::paperTestTemplate(ErrorModel *model, uint32_t CRC_32, bool fo
 	
 	Checksum16Bit check;
 	CRC16Bit crc(0x1021);
-	CRC32Bit crc32;
-	crc32.generateTable(CRC_32);
+	CRC32Bit crc32(CRC_32);
 
 	//long diff[50];
 	int devpad[times];

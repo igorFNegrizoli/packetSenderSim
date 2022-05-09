@@ -17,7 +17,6 @@ uint16_t Checksum16Bit::doChecksum(Packet* packet){
     uint16_t checksum = 0;
     uint16_t* data16B = (uint16_t*)packet->getData();
     for(int i=0; i < packet->getLength()/2; i++){
-        std::cout << checksum << " + " << data16B[i] << std::endl;
         checksum += data16B[i];
         checksum += checksum < data16B[i];
         }
