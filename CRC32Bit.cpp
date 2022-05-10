@@ -8,35 +8,38 @@
 //#define CRC_32 0xc9d204f5
 //#define POLYNOMIAL CRC_32
 
-bool CRC32Bit::verifyCRC(Packet* packet, uint32_t crc){
-    int i, j;
-    uint32_t _crc = doCRC(packet);
-    return (crc==_crc);
+CRC32Bit::CRC32Bit(uint32_t polynomial_){
+	polynomial = polynomial_;
+	generateTable();
 }
 
-void CRC32Bit::generateTable(uint32_t polynomial){
-		for (uint32_t i = 0; i < 256; i++) {
-			uint32_t c = i;
-			for (size_t j = 0; j < 8; j++) {
-				if (c & 1) {
-					c = polynomial ^ (c >> 1);
-				}
-				else {
-					c >>= 1;
-				}
+bool CRC32Bit::verifyCRC(Packet* packet, uint32_t crc){
+    return crc==doCRC(packet);
+}
+
+void CRC32Bit::generateTable(){
+	for (unsigned int byte = 0; byte <= 0xFF; byte++){
+		uint32_t crc = (byte << 24);
+		for (int bit = 0; bit < 8; bit++ ){
+			if (crc & (1L << 31)) crc = (crc << 1) ^ this->polynomial;
+				else crc = (crc << 1);
 			}
-			table[i] = c;
-		}
+		table[ byte ] = crc;
+	}
 }
 
 
 uint32_t CRC32Bit::doCRC(Packet* packet){
-    uint32_t crc = 0;
-    uint8_t* u = new uint8_t[packet->getLength()];
-    std::memcpy(u, packet->getData(), packet->getLength());//static_cast<const uint8_t*>(packet->getData());
-    for (size_t i = 0; i < packet->getLength(); ++i) {
-	crc = table[(crc ^ u[i]) & 0xFF] ^ (crc >> 8);
-    }
-    delete [] u;
-    return crc;
+    //uint32_t crc = 0;
+    //uint8_t* u = new uint8_t[packet->getLength()];
+    uint8_t* data8B = (uint8_t*)packet->getData();
+    uint16_t len = packet->getLength();
+    //std::memcpy(u, packet->getData(), packet->getLength());//static_cast<const uint8_t*>(packet->getData());
+
+    uint32_t crc = -1;
+	while( len-- )
+		crc = table[ (*data8B++  ^ (crc >> 24)) & 0xFF ] ^ (crc << 8);
+	return ~crc;
+    //delete [] u;
+    //return crc;
 }

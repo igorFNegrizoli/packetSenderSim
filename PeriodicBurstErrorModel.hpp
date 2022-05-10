@@ -29,10 +29,10 @@ uint16_t injectErrors(Packet* packet, bool forceError) {
     threshold = this->rng->next(Tmin, Tmax);
     eLength = this->rng->next(Nmin, Nmax);
 
-    for(i=0; i<packet->getLength()/2; ++i){
-        for(pos=15; pos<16; --pos){        
+    for(i=0; i<packet->getLength(); ++i){
+        for(pos=7; pos<8; --pos){        
             if(eLength > 0){
-                packet->injectErrorInChunk(i*16+pos);
+                packet->injectErrorInChunk(i*8+pos);
                 ++numberOfErrors;
                 --eLength;
             }

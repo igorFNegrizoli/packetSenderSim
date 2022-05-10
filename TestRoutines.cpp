@@ -23,10 +23,8 @@ void TestRoutines::comparePolynomials32(ErrorModel *model, uint32_t polyA, uint3
 	int detectionFails[2]; //0 = PolyA, 1 = PolyB
 	int bitErrors; //para contar o numero de total bits invertidos
 	
-	CRC32Bit crc32A;
-	CRC32Bit crc32B;
-	crc32A.generateTable(polyA);
-	crc32B.generateTable(polyB);
+	CRC32Bit crc32A(polyA);
+	CRC32Bit crc32B(polyB);
 
 	long diff[50];
 	int devpad[times];
@@ -118,9 +116,9 @@ void TestRoutines::burstVerification(ErrorModel *model, int N){
 		if (err>0) {
 		//pkg->print('b');
  			int k = 0;
-			for (uint16_t x =0; x<pkg->getLength()/2; ++x) {
-				uint16_t auxiliary = (pkg->getData()[x]^pk2->getData()[x]);			
-				for (uint16_t y =15; y<16;--y) {
+			for (uint16_t x =0; x<pkg->getLength(); ++x) {
+				uint16_t auxiliary = (((uint8_t*)pkg->getData())[x]^((uint8_t*)pk2->getData())[x]);			
+				for (uint16_t y = 7; y<8;--y) {
 			            int d = uint16_t(pow(2, y));
 				    int r = auxiliary&d;
 				    //cout<<bitset<16>(auxiliary)<< "- "<<bitset<16>(d)<< "- "<<bitset<16>(r)<<std::endl;	
@@ -145,8 +143,7 @@ void TestRoutines::paperTestTemplate(ErrorModel *model, uint32_t CRC_32, bool fo
 	
 	Checksum16Bit check;
 	CRC16Bit crc(0x1021);
-	CRC32Bit crc32;
-	crc32.generateTable(CRC_32);
+	CRC32Bit crc32(CRC_32);
 
 	//long diff[50];
 	int devpad[times];

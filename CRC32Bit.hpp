@@ -6,9 +6,11 @@
 
 class CRC32Bit: public VerificationAlgorithm {
     private:
-      uint16_t table[256];
+      uint32_t table[256];
+      uint32_t polynomial;
     public:
-      void generateTable(uint32_t polynomial);
+      CRC32Bit(uint32_t polynomial);
+      void generateTable();
       bool verifyCRC(Packet* packet, uint32_t chk);
       uint32_t doCRC(Packet* packet);    
       uint32_t generateVerificationCode(Packet* packet){
