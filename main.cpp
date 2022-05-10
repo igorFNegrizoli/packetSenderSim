@@ -1,4 +1,5 @@
 #include "Checksum16Bit.hpp"
+#include "Checksum32Bit.hpp"
 #include "CRC16Bit.hpp"
 #include "CRC32Bit.hpp"
 #include "Packet.hpp"
@@ -164,6 +165,16 @@ int main(){
 
 	/*
 	RNG* rng = new RNG(SEED);
+	VerificationAlgorithm* alg = new Checksum32Bit();
+	Packet *pkg = new Packet(8, rng);
+	pkg->print('h');
+	std::cout << std::hex << alg->generateVerificationCode(pkg) << std::endl;
+	//TestRoutines* test = new TestRoutines(TIMES, DEBUG);
+	//test->executionTimeTest(rng, alg);
+	*/
+
+	
+	RNG* rng = new RNG(SEED);
 	Packet *pkg = new Packet(512, rng);
 	//pkg->print('h');
 	//CRC32Bit* alg = new CRC32Bit(0x04C11DB7);
@@ -171,21 +182,71 @@ int main(){
 	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
 	GilbertErrorModel *gil = new GilbertErrorModel(3, 0.01, rng);
 	test->comparePolynomials32(gil, 0x04C11DB7, 0xC9D204F5);
-	*/
-
 	
-	uint8_t* arr = (uint8_t*)malloc(8);
-	uint16_t* arr16 = (uint16_t*)arr;
 
+	/*
+	//inicializa arr
+	int arraySize = 8;
+	uint8_t* arr = (uint8_t*)malloc(arraySize);
+	uint16_t* arr16 = (uint16_t*)malloc(arraySize);//arr;
+
+	//atribui valores e printa arr8
 	for(uint8_t i=0; i<8; i++) arr[i] = i;
 	for(uint8_t i=0; i<8; i++) std::cout << std::hex << (int)arr[i] << " ";
 
 	std::cout << std::endl;
-
+	
+	//inicializa e atribui arr16
+	arr16 = (uint16_t*)arr;	
 	for(uint8_t i=0; i<4; i++) std::cout << (int)arr16[i] << " ";
 
 	std::cout << std::endl;
 	
+	//converte little endian
+	int i = 0;
+	while(i<arraySize){
+		uint16_t value = 0;
+		for(int j = 0; j<sizeof(uint16_t); j++, i++){
+			std::cout << " Value: " << value;
+			value += ((uint16_t)arr[i]) << (8*(sizeof(uint16_t)-j-1));
+			std::cout << " -> " << value << std::endl;
+		}
+		arr16[(i/2)-1] = value;
+	}
+
+	for(uint8_t i=0; i<4; i++) std::cout << (int)arr16[i] << " ";
+
+	std::cout << std::endl;
+	*/
+
+	/*
+	RNG* rng = new RNG(SEED);
+	Packet *pkg = new Packet(8, rng);
+	uint16_t* data16 = (uint16_t*)pkg->char2BigEndian(2);
+	uint32_t* data32 = (uint32_t*)pkg->char2BigEndian(4);
+
+	for(int i=0; i<8; i++)
+		std::cout << std::hex << (int)((uint8_t*)pkg->getData())[i] << " ";
+	std::cout << std::endl;
+
+	for(int i=0; i<4; i++)
+		std::cout << std::hex << data16[i] << " ";
+	std::cout << std::endl;
+
+	for(int i=0; i<2; i++)
+		std::cout << std::hex << data32[i] << " ";
+	std::cout << std::endl;
+	*/
+
+	/*
+	RNG* rng = new RNG(SEED);
+	Packet *pkg = new Packet(8, rng);
+	pkg->print('h');
+	//pkg->injectErrorInChunk(8);
+	GilbertErrorModel *gil = new GilbertErrorModel(3, 0.1, rng);
+	std::cout << gil->injectErrors(pkg, true) << std::endl;
+	pkg->print('h');
+	*/
 
 	return 0;
 }

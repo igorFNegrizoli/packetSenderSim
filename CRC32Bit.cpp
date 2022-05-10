@@ -32,7 +32,7 @@ void CRC32Bit::generateTable(){
 uint32_t CRC32Bit::doCRC(Packet* packet){
     //uint32_t crc = 0;
     //uint8_t* u = new uint8_t[packet->getLength()];
-    uint8_t* data8B = packet->getData();
+    uint8_t* data8B = (uint8_t*)packet->getData();
     uint16_t len = packet->getLength();
     //std::memcpy(u, packet->getData(), packet->getLength());//static_cast<const uint8_t*>(packet->getData());
 

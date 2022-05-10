@@ -116,9 +116,9 @@ void TestRoutines::burstVerification(ErrorModel *model, int N){
 		if (err>0) {
 		//pkg->print('b');
  			int k = 0;
-			for (uint16_t x =0; x<pkg->getLength()/2; ++x) {
-				uint16_t auxiliary = (pkg->getData()[x]^pk2->getData()[x]);			
-				for (uint16_t y =15; y<16;--y) {
+			for (uint16_t x =0; x<pkg->getLength(); ++x) {
+				uint16_t auxiliary = (((uint8_t*)pkg->getData())[x]^((uint8_t*)pk2->getData())[x]);			
+				for (uint16_t y = 7; y<8;--y) {
 			            int d = uint16_t(pow(2, y));
 				    int r = auxiliary&d;
 				    //cout<<bitset<16>(auxiliary)<< "- "<<bitset<16>(d)<< "- "<<bitset<16>(r)<<std::endl;	

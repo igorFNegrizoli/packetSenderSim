@@ -60,21 +60,21 @@ class GilbertErrorModel: public ErrorModel {
     	bool state = GOOD_STATE;//good state
 
     	bool wasPacketModified = false;
-    	for(int i=0; i<packet->getLength()/2; ++i){
+    	for(int i=0; i<packet->getLength(); ++i){
             //std::cout << "\nb"<<std::bitset<16>(packet->getData()[i]) <<std::endl;
-            for(uint16_t j=15; j<16; --j){
+            for(uint16_t j=7; j<8; --j){
                 if(state == GOOD_STATE){
 		    if(rng->trueFalseProb(1-p) == false){
-                        numberOfErrors+=packet->injectErrorInChunk(i*16+j);
+                        numberOfErrors+=packet->injectErrorInChunk(i*8+j);
                         wasPacketModified = true;
-                        //std::cout << i << " : " << pos << std::endl;
+                        //std::cout << i << " : " << j << std::endl;
                         state = BAD_STATE;
                     }                    
                 }else{ //it is in BAD_STATE
                     if(rng->trueFalseProb(1-q)){
-                        numberOfErrors+=packet->injectErrorInChunk(i*16+j);
+                        numberOfErrors+=packet->injectErrorInChunk(i*8+j);
                         wasPacketModified = true;
-                        //std::cout << i << " : " << pos << std::endl;
+                        //std::cout << i << " : " << j << std::endl;
                         state = BAD_STATE;
                     } else {
  			state = GOOD_STATE;
