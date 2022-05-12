@@ -9,37 +9,37 @@
 
 class GilbertErrorModel: public ErrorModel {
 
-   private:
-     int burst;
-     double plRate;
+private:
+    int burst;
+    double plRate;
      
-   public:        
-     GilbertErrorModel(int burst_, double plRate_):ErrorModel() {
-	this->burst = burst_;
-	this->plRate = plRate_;
-     }
+public:        
+    GilbertErrorModel(int burst_, double plRate_):ErrorModel() {
+    	this->burst = burst_;
+	    this->plRate = plRate_;
+    }
      
-     GilbertErrorModel(int burst_, double plRate_, RNG* rng_):ErrorModel(rng) {
-	this->burst = burst_;
-	this->plRate = plRate_;
-	this->rng = rng_;
-     }
+    GilbertErrorModel(int burst_, double plRate_, RNG* rng_):ErrorModel(rng) {
+	    this->burst = burst_;
+	    this->plRate = plRate_;
+	    this->rng = rng_;
+    }
      
-     int getBurst() {
-	return this->burst;
-     }
+    int getBurst() {
+	    return this->burst;
+    }
      
-     double getPlRate() {
-	return this->plRate;
-     }
+    double getPlRate() {
+	    return this->plRate;
+    }
 
-     double getP() {
-	return double(getQ()*plRate)/(1-plRate);
-     }
+    double getP() {
+	    return double(getQ()*plRate)/(1-plRate);
+    }
 
-     double getQ() {
-	return double(1)/burst;
-     }
+    double getQ() {
+	    return double(1)/burst;
+    }
 
     uint16_t injectErrors(Packet* packet, bool forceError) {
 	//packet->print('b');
@@ -83,8 +83,11 @@ class GilbertErrorModel: public ErrorModel {
             }
            // std::cout << "a"<<std::bitset<16>(packet->getData()[i]) <<std::endl;
         }
-	if (numberOfErrors == 0 && forceError)
-	    numberOfErrors+=packet->injectErrorInChunk(getRNG()->next(packet->getLength())); 
+
+    	if (numberOfErrors == 0 && forceError)
+    	    numberOfErrors+=packet->injectErrorInChunk(getRNG()->next(packet->getLength())); 
+
+        packet->updateBuffers();
         return numberOfErrors;
     }
 

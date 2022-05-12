@@ -24,6 +24,7 @@ class Packet{
         uint16_t getLength();
         Packet* clone();
         void print(char mode);
+        void updateBuffers();
         void* char2BigEndian(uint16_t wordSize);
         //retornam quantos bits foram afetados
         uint16_t injectErrorInChunk(uint64_t bit_pos);

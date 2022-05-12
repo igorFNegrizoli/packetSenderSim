@@ -64,17 +64,24 @@ Packet::Packet(uint16_t len, bool zeroOrOne){
     }
 }
 
+void Packet::updateBuffers(){
+    data16b = (uint16_t*)char2BigEndian(2);
+    data32b = (uint32_t*)char2BigEndian(4);
+}
+
 void* Packet::getData(uint16_t len){
     if(len == 2){ 
         if(data16b != nullptr)
             return data16b;
         else
-            return char2BigEndian(len);
+            data16b = (uint16_t*)char2BigEndian(len);
+            return data16b;
     }else if(len == 4){ 
         if(data32b != nullptr) 
             return data32b;
         else 
-            return char2BigEndian(len);
+            data32b = (uint32_t*)char2BigEndian(len);
+            return data32b;
     }
     return this->data;
 }

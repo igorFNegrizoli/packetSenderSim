@@ -3,35 +3,36 @@
 #include <iostream>
 
 class BernoulliErrorModel: public ErrorModel {
-
-   private:
-     double BER; //bit error rate     
-   public:        
-     BernoulliErrorModel(double BER):ErrorModel() {
-	this->BER = BER;
-     }
+private:
+    double BER; //bit error rate     
+public:        
+    BernoulliErrorModel(double BER):ErrorModel() {
+        this->BER = BER;
+    }
      
-     BernoulliErrorModel(double BER, RNG* rng):ErrorModel(rng) {
-	this->BER = BER;
-     }
-
-     
-     double getBER() {
-	return this->BER;
-     }
+    BernoulliErrorModel(double BER, RNG* rng):ErrorModel(rng) {
+	   this->BER = BER;
+    }
+ 
+    double getBER() {
+    	return this->BER;
+    }
 
     uint16_t injectErrors(Packet* packet, bool forceError) {
-    	uint16_t numberOfErrors = 0;
-    	for(uint16_t i = 0; i<packet->getLength(); ++i){
-             for(uint16_t j = 7; j<8; --j){
+        uint16_t numberOfErrors = 0;
+        for(uint16_t i = 0; i<packet->getLength(); ++i){
+            for(uint16_t j = 7; j<8; --j){
                 if(getRNG()->trueFalseProb(this->getBER())==true){                    
                     numberOfErrors+=packet->injectErrorInChunk(i*8+j);
                 }
-             }
+            }
         }  
-	if (numberOfErrors == 0 && forceError)
-	    numberOfErrors+=packet->injectErrorInChunk(getRNG()->next(packet->getLength())); 
-    	
+
+        if (numberOfErrors == 0 && forceError)
+            numberOfErrors+=packet->injectErrorInChunk(getRNG()->next(packet->getLength()));
+
+        packet->updateBuffers();
+
         return numberOfErrors;
     }
 
