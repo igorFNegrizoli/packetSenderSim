@@ -160,7 +160,7 @@ uint16_t Packet::injectErrorInChunk(uint64_t bit_pos){
     } 
     //determinar o indice no array de data
     int word = bit_pos / 8.0;
-    int pos  = 7 - (bit_pos % 8);
+    int pos  = (bit_pos % 8);
     this->data[word] ^= uint8_t(pow(2,pos));
     return 1;
 }
