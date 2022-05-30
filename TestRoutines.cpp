@@ -136,6 +136,53 @@ void TestRoutines::burstVerification(ErrorModel *model, int N){
 	for (int x=0; x<20;++x) std::cout<<"["<<x<<"] = "<<diff[x]<<std::endl;
 }
 
+void TestRoutines::genericTest(ErrorModel *model, VerificationAlgorithm** algs, uint8_t len, bool forceError){
+	//std::cout << "Params: " << len;
+	uint32_t DFs[len]; //detection fail for each verifiation algorithm
+
+	for (uint8_t x=0; x<len; x++) 
+		DFs[x] = 0;
+
+	for (uint16_t N=pow(2,3); N<pow(2,11); N*=2){
+		//std::cout << "Calculando para " << N << std::endl;
+		RNG *rng = new RNG(N);
+		uint16_t testsWithErrors = 0;
+		uint32_t bitErrors = 0;
+
+		for(uint32_t i=0; i<times; i++){
+			//std::cout << "Checkpoint";
+			//std::cout << "Pacote numero " << i << std::endl;
+			
+			Packet *pkg = new Packet(N, rng);
+
+			uint32_t chks[len]; //checksums before error injection
+
+
+			for(uint8_t algCounter=0; algCounter<len; algCounter++){
+				chks[algCounter] = algs[algCounter]->generateVerificationCode(pkg);
+				//std::cout << std::hex << chks[algCounter] << " ";
+			}
+			//std::cout << std::endl;
+
+			int err = model->injectErrors(pkg, forceError);
+			bitErrors += err;
+
+			if (err>0) testsWithErrors++;
+			//std::cout << "erros injetados " << err << std::endl;
+			
+
+			for(uint8_t algCounter=0; algCounter<len; algCounter++)
+				if(err>0 && (algs[algCounter]->generateVerificationCode(pkg) == chks[algCounter])) 
+					DFs[algCounter]++;
+			
+			delete pkg;
+		}
+		for(uint8_t i=0; i<len; i++) std::cout << DFs[i] << " ";
+		std::cout << std::endl;
+		delete rng;
+	}
+}
+
 void TestRoutines::paperTestTemplate(ErrorModel *model, uint32_t CRC_32, bool forceError) {
 	//int detectionFails[3]; //0=checksum, 1=crc 2=crc32 para contar o numero de falhas de detecção
 	unsigned int DF_checksum, DF_CRC16, DF_CRC32; //DF = Detection Fail

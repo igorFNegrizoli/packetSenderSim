@@ -6,6 +6,7 @@
 #include "BernoulliErrorModel.hpp"
 #include "GilbertErrorModel.hpp"
 #include "PeriodicBurstErrorModel.hpp"
+#include "SparseBurstsErrorModel.hpp"
 #include "TestRoutines.hpp"
 
 #include <iostream>
@@ -14,6 +15,7 @@
 #include <cstdlib>
 
 #define DEBUG false
+//#define TIMES 1000000
 #define TIMES 1000000
 #define SEED 0x2021
 
@@ -175,13 +177,14 @@ int main(){
 
 	
 	RNG* rng = new RNG(SEED);
-	Packet *pkg = new Packet(512, rng);
-	//pkg->print('h');
-	//CRC32Bit* alg = new CRC32Bit(0x04C11DB7);
-	//std::cout << std::hex << alg->generateVerificationCode(pkg) << std::endl;
+	Packet *pkg = new Packet(8);
+	VerificationAlgorithm *algs[2];
+	SparseBurstsErrorModel *spb = new SparseBurstsErrorModel(0.1, 2, 8, rng);
+	algs[0] = new Checksum16Bit();
+	algs[1] = new CRC32Bit(0xc9d204f5);
 	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
-	GilbertErrorModel *gil = new GilbertErrorModel(3, 0.01, rng);
-	test->comparePolynomials32(gil, 0x04C11DB7, 0xC9D204F5);
+	test->genericTest(spb, algs, 2, true);
+	
 	
 
 	/*

@@ -44,7 +44,6 @@ public:
             for(uint16_t j=7; j<8; --j){
                 if(eLength > 0){
                     numberOfErrors+=packet->injectErrorInChunk(i*8+j);
-                    std::cout << "burst: " << i << " " << j << std::endl;
                     eLength--;
                     if (eLength == 0)
                         lastError = true;
@@ -53,7 +52,6 @@ public:
                 }else if(getRNG()->trueFalseProb(this->BOR)){
                     eLength = this->rng->next(Fmin, Fmax)-1;
                     numberOfErrors+=packet->injectErrorInChunk(i*8+j);
-                    std::cout << "start burst: " << i << " " << j << " " << eLength << std::endl;
                 }
             }
         }

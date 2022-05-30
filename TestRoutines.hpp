@@ -12,6 +12,7 @@ public:
 	void executionTimeTest(RNG* rng, VerificationAlgorithm* alg);
 	void burstVerification(ErrorModel *model, int N);
 	void paperTestTemplate(ErrorModel *model, uint32_t CRC_32, bool forceError);
+	void genericTest(ErrorModel *model, VerificationAlgorithm** algs, uint8_t len, bool forceError);
 };
 
 #endif
