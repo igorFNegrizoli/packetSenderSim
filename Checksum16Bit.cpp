@@ -3,6 +3,7 @@
 #include <iostream>
 #include <bitset>
 
+
 bool Checksum16Bit::verifyChecksum(Packet* packet, uint16_t chk){
     return(this->doChecksum(packet) == chk);
 }
@@ -15,7 +16,7 @@ its not made here, we can ignore this issue for now
 */
 uint16_t Checksum16Bit::doChecksum(Packet* packet){ 
     uint16_t checksum = 0;
-    uint16_t* data16B = (uint16_t*)packet->getData();
+    uint16_t* data16B = (uint16_t*)packet->getData(2);
     for(int i=0; i < packet->getLength()/2; i++){
         checksum += data16B[i];
         checksum += checksum < data16B[i];

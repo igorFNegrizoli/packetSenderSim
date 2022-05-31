@@ -14,10 +14,6 @@ FletcherAdler16Bit::FletcherAdler16Bit(uint16_t initialC1_, uint16_t initialC2_,
     this->modulusVal = modulusVal_;
 }
 
-bool FletcherAdler16Bit::verifyChecksum(Packet* packet, uint16_t chk){
-    return(this->doChecksum(packet) == chk);
-}
-
 uint16_t FletcherAdler16Bit::doChecksum(Packet* packet){ 
     uint8_t* data = (uint8_t*)packet->getData();
     uint16_t c1 = this->initialC1;

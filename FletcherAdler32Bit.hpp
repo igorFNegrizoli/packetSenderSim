@@ -3,6 +3,7 @@
 #include <cstdint>
 #include "Packet.hpp"
 #include "VerificationAlgorithm.hpp"
+#include <string>
 
 class FletcherAdler32Bit: public VerificationAlgorithm {
 private:
@@ -16,6 +17,9 @@ public:
     uint32_t doChecksum(Packet* packet);
     uint32_t generateVerificationCode(Packet* packet){
         return doChecksum(packet);
+    }
+    std::string getAlgName(){
+        return "FLAD32";
     }
 };
 

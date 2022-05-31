@@ -3,6 +3,7 @@
 #include <cstdint>
 #include "Packet.hpp"
 #include "VerificationAlgorithm.hpp"
+#include <string>
 
 class Checksum16Bit: public VerificationAlgorithm {
     public:
@@ -10,6 +11,9 @@ class Checksum16Bit: public VerificationAlgorithm {
     uint16_t doChecksum(Packet* packet);
     uint32_t generateVerificationCode(Packet* packet){
         return (uint32_t) doChecksum(packet);
+    }
+    std::string getAlgName(){
+        return "CHK16";
     }
 };
 

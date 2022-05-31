@@ -32,6 +32,7 @@ Packet::Packet(uint16_t len, RNG* rng_){
     for(uint16_t i=0; i<len; ++i){
         this->data[i] = this->rng->next(0x00, 0xff);
     }
+    this->updateBuffers();
 }
 
 Packet* Packet::clone() {
@@ -40,6 +41,7 @@ Packet* Packet::clone() {
     for (int i=0; i<p->length; ++i) {
 	p->data[i] = this->data[i];
     }
+    p->updateBuffers();
     return p;
 }
 
@@ -62,11 +64,13 @@ Packet::Packet(uint16_t len, bool zeroOrOne){
             data[i] = 0x00;
         }
     }
+    this->updateBuffers();
 }
 
 void Packet::updateBuffers(){
-    data16b = (uint16_t*)char2BigEndian(2);
-    data32b = (uint32_t*)char2BigEndian(4);
+    //std::cout << "updateBuffers called";
+    this->data16b = (uint16_t*)char2BigEndian(2);
+    this->data32b = (uint32_t*)char2BigEndian(4);
 }
 
 void* Packet::getData(uint16_t len){
@@ -95,6 +99,10 @@ void Packet::print(char mode){
     switch(mode){
         case 'h':
             for(int i=0;i<(this->length);++i) std::cout << std::hex << (int)this->data[i] << " ";
+                std::cout << std::endl;
+            for(int i=0;i<(this->length/2);++i) std::cout << std::hex << (int)this->data16b[i] << " ";
+                std::cout << std::endl;
+            for(int i=0;i<(this->length/4);++i) std::cout << std::hex << (int)this->data32b[i] << " ";
                 break;
         case 'b':
             for(int i=0;i<(this->length);++i) std::cout << std::bitset<8>((int)this->data[i]) << " ";
@@ -118,7 +126,7 @@ wordSize -> size in bytes of the data type of the array wich the packet data wil
 void* Packet::char2BigEndian(uint16_t wordSize){
     int i = 0;
     if(wordSize == 2){
-        if(data16b != nullptr) return data16b;
+        //if(data16b != nullptr) return data16b;
 
         data16b = (uint16_t*)malloc(this->getLength());
         while(i < this->getLength()){
@@ -133,7 +141,7 @@ void* Packet::char2BigEndian(uint16_t wordSize){
         return data16b;    
 
     }else if(wordSize == 4){
-        if(data32b != nullptr) return data32b;
+        //if(data32b != nullptr) return data32b;
 
         data32b = (uint32_t*)malloc(this->getLength());
         while(i < this->getLength()){

@@ -3,6 +3,7 @@
 #include <cstdint>
 #include "Packet.hpp"
 #include "VerificationAlgorithm.hpp"
+#include <string>
 
 class CRC32Bit: public VerificationAlgorithm {
     private:
@@ -15,6 +16,9 @@ class CRC32Bit: public VerificationAlgorithm {
       uint32_t doCRC(Packet* packet);    
       uint32_t generateVerificationCode(Packet* packet){
         return doCRC(packet);
+    }
+    std::string getAlgName(){
+        return "CRC32";
     }
 };
 

@@ -140,10 +140,15 @@ void TestRoutines::genericTest(ErrorModel *model, VerificationAlgorithm** algs, 
 	//std::cout << "Params: " << len;
 	uint32_t DFs[len]; //detection fail for each verifiation algorithm
 
-	for (uint8_t x=0; x<len; x++) 
-		DFs[x] = 0;
+	std::cout << "\nN(B)\tf(bit)\t%\t";
+	for(uint8_t i=0; i<len; i++) std::cout << algs[i]->getAlgName() << "\t";
+	std::cout << std::endl;
 
 	for (uint16_t N=pow(2,3); N<pow(2,11); N*=2){
+
+		for (uint8_t x=0; x<len; x++) 
+			DFs[x] = 0;
+
 		//std::cout << "Calculando para " << N << std::endl;
 		RNG *rng = new RNG(N);
 		uint16_t testsWithErrors = 0;
@@ -160,29 +165,36 @@ void TestRoutines::genericTest(ErrorModel *model, VerificationAlgorithm** algs, 
 
 			for(uint8_t algCounter=0; algCounter<len; algCounter++){
 				chks[algCounter] = algs[algCounter]->generateVerificationCode(pkg);
-				//std::cout << std::hex << chks[algCounter] << " ";
 			}
-			//std::cout << std::endl;
+			//std::cout << "packet before: ";
+			//pkg->print('h');
 
 			int err = model->injectErrors(pkg, forceError);
+			//std::cout << "packet after: ";
+			//pkg->print('h');
+
 			bitErrors += err;
 
-			if (err>0) testsWithErrors++;
-			//std::cout << "erros injetados " << err << std::endl;
-			
+			if (err>0) testsWithErrors++;			
 
-			for(uint8_t algCounter=0; algCounter<len; algCounter++)
-				if(err>0 && (algs[algCounter]->generateVerificationCode(pkg) == chks[algCounter])) 
+			for(uint8_t algCounter=0; algCounter<len; algCounter++){
+				if(err>0 && (algs[algCounter]->generateVerificationCode(pkg) == chks[algCounter])){
+					//std::cout << algs[algCounter]->generateVerificationCode(pkg) << " == " << chks[algCounter] << std::endl;
 					DFs[algCounter]++;
+				}
+			}
 			
 			delete pkg;
 		}
-		for(uint8_t i=0; i<len; i++) std::cout << DFs[i] << " ";
+		std::cout << N << "\t"
+		<< FIXED_FLOAT(2, (double)bitErrors/times) << "\t"
+		<< FIXED_FLOAT(2, (((double)bitErrors/times)*100.0)/(N*8)) << "\t";
+		for(uint8_t i=0; i<len; i++) std::cout << DFs[i] << "\t";
 		std::cout << std::endl;
 		delete rng;
 	}
 }
-
+/*
 void TestRoutines::paperTestTemplate(ErrorModel *model, uint32_t CRC_32, bool forceError) {
 	//int detectionFails[3]; //0=checksum, 1=crc 2=crc32 para contar o numero de falhas de detecção
 	unsigned int DF_checksum, DF_CRC16, DF_CRC32; //DF = Detection Fail
@@ -282,3 +294,4 @@ void TestRoutines::paperTestTemplate(ErrorModel *model, uint32_t CRC_32, bool fo
 	}//end for N
 		
 }
+*/

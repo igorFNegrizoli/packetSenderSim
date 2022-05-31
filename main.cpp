@@ -2,6 +2,8 @@
 #include "Checksum32Bit.hpp"
 #include "CRC16Bit.hpp"
 #include "CRC32Bit.hpp"
+#include "FletcherAdler16Bit.hpp"
+#include "FletcherAdler32Bit.hpp"
 #include "Packet.hpp"
 #include "BernoulliErrorModel.hpp"
 #include "GilbertErrorModel.hpp"
@@ -15,12 +17,11 @@
 #include <cstdlib>
 
 #define DEBUG false
-//#define TIMES 1000000
 #define TIMES 1000000
 #define SEED 0x2021
 
 using namespace std;
-
+/*
 void execTestRoutine(){
 
 	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
@@ -117,73 +118,23 @@ void execTestRoutine(){
 	delete per;
 
 	delete rng;
-}
+}*/
 
 #include <bitset>
 int main(){
 	
-	/*
 	RNG* rng = new RNG(SEED);
-    GilbertErrorModel *gil = new GilbertErrorModel(3, 0.01, rng);
-	cout << endl << endl << "GIL= "<<3<<", "<<0.01<<" p="<<gil->getP()<<", q="<<gil->getQ()<<endl;	
-	comparePolynomials32(gil, 0x04C11DB7, 0xc9d204f5);
-	delete gil;
-	delete rng;
-	*/
-
-	//execTestRoutine();
-	
-	/*
-	Packet *pkg = new Packet(8, rng);
-	pkg->print('h');
-	cout<<endl;
-	uint8_t* u = new uint8_t[pkg->getLength()];
-	std::memcpy(u, pkg->getData(), pkg->getLength());//static_cast<const uint8_t*>(packet->getData());
-	for(int i=0; i<8; i++) cout<< +u[i]<<" ";
-	*/
-
-	/*
-	RNG* rng = new RNG(SEED);
-	VerificationAlgorithm* alg = new Checksum16Bit();
-	GilbertErrorModel *gil = new GilbertErrorModel(3, 0.01, rng);
-	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
-	test->comparePolynomials32(gil, 0x04C11DB7, 0xc9d204f5);
-	*/
-
-	/*
-	RNG* rng = new RNG(SEED);
-	//VerificationAlgorithm* alg = new CRC16Bit(0x1021);
-	GilbertErrorModel *gil = new GilbertErrorModel(3, 0.01, rng);
-	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
-	test->paperTestTemplate(gil, 0x04C11DB7, true);
-	*/
-
-	/*
-	RNG* rng = new RNG(SEED);
-	VerificationAlgorithm* alg = new Checksum16Bit();
-	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
-	test->executionTimeTest(rng, alg);
-	*/
-
-	/*
-	RNG* rng = new RNG(SEED);
-	VerificationAlgorithm* alg = new Checksum32Bit();
-	Packet *pkg = new Packet(8, rng);
-	pkg->print('h');
-	std::cout << std::hex << alg->generateVerificationCode(pkg) << std::endl;
-	//TestRoutines* test = new TestRoutines(TIMES, DEBUG);
-	//test->executionTimeTest(rng, alg);
-	*/
-
-	
-	RNG* rng = new RNG(SEED);
-	Packet *pkg = new Packet(8);
-	VerificationAlgorithm *algs[2];
+	VerificationAlgorithm *algs[7];
 	SparseBurstsErrorModel *spb = new SparseBurstsErrorModel(0.1, 2, 8, rng);
 	algs[0] = new Checksum16Bit();
-	algs[1] = new CRC32Bit(0xc9d204f5);
+	algs[1] = new Checksum32Bit();
+	algs[2] = new CRC32Bit(0xc9d204f5);
+	algs[3] = new CRC32Bit(0x04C11DB7);
+	algs[4] = new FletcherAdler32Bit(0,0,65535);
+	algs[5] = new FletcherAdler32Bit(0,0,65536);
+	algs[6] = new FletcherAdler32Bit(1,0,65521);
 	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
-	test->genericTest(spb, algs, 2, true);
+	test->genericTest(spb, algs, 7, true);
 	
 	
 
