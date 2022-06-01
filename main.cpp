@@ -23,13 +23,14 @@
 int main(){
 	
 	RNG* rng = new RNG(SEED);
-	VerificationAlgorithm *algs[7];
+	VerificationAlgorithm *algs[8];
 	ErrorModel *errs[14];
 	
 	algs[0] = new Checksum16Bit();
 	algs[1] = new Checksum32Bit();
 	algs[2] = new CRC32Bit(0xc9d204f5);
 	algs[3] = new CRC32Bit(0x04C11DB7);
+	algs[3] = new CRC16Bit(0x1021);
 	algs[4] = new FletcherAdler32Bit(0,0,65535);
 	algs[5] = new FletcherAdler32Bit(0,0,65536);
 	algs[6] = new FletcherAdler32Bit(1,0,65521);

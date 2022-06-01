@@ -7,16 +7,25 @@ bool CRC16Bit::verifyCRC(Packet* packet, uint16_t crc){
 }
 
 uint16_t CRC16Bit::doCRC(Packet* packet){
-    int i, j;
-    uint16_t crc = 0;
-    uint16_t* data16B = (uint16_t*)packet->getData();
+    uint16_t crc = 0xffff;
+    int count = packet->getLength();
+    uint8_t* ptr = (uint8_t*)packet->getData();
 
-    for (i = 0; i < packet->getLength()/2; i++){
-        crc ^= data16B[i];
-        for (j = 0; j < 16; j++){
-            if (crc & 1) crc ^= crc16;
-            crc >>= 1;
+    while(--count >= 0 )
+    {
+        crc = crc ^ ((uint16_t) (*ptr++ << 8));
+        for(int i = 0; i < 8; i++)
+        {
+            if( crc & 0x8000 )
+            {
+                crc = (crc << 1) ^ this->crc16;
+            }
+            else
+            {
+                crc = crc << 1;
+            }
         }
     }
+
     return crc;
 }

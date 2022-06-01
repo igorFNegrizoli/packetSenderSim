@@ -17,6 +17,9 @@ public:
     uint32_t generateVerificationCode(Packet* packet){
         return (uint32_t) doCRC(packet);
     }
+    std::string getAlgName(){
+        return "CRC16";
+    }
 };
 
 #endif
