@@ -18,6 +18,11 @@ public:
     	return this->BER;
     }
 
+    void printAttributes(){
+        std::cout << "Bernoulli Error Model: " << std::endl;
+        std::cout << "BER: " << this->BER << std::endl;
+    }
+
     uint16_t injectErrors(Packet* packet, bool forceError) {
         uint16_t numberOfErrors = 0;
         for(uint16_t i = 0; i<packet->getLength(); ++i){

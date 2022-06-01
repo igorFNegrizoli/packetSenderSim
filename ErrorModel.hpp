@@ -14,6 +14,7 @@ class ErrorModel {
 	  Retorna quantos bits foram invertidos
 	*/
 	virtual uint16_t injectErrors(Packet* packet_, bool forceError) = 0;
+	virtual void printAttributes() = 0;
         
 	RNG *getRNG();
 	~ErrorModel();

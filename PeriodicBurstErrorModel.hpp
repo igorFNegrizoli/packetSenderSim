@@ -20,6 +20,12 @@ public:
         this->rng = rng_;
     }
 
+    void printAttributes(){
+        std::cout << "Periodic Error Model: " << std::endl;
+        std::cout << "N: [" << this->Nmin << ", " << this->Nmax << "]" << std::endl;
+        std::cout << "T: [" << this->Tmin << ", " << this->Tmax << "]" << std::endl;
+    }
+
     uint16_t injectErrors(Packet* packet, bool forceError) {
         // Usar Tmin > 0 e Nmin > 0     Para um threshold(T) ou burstLength(N) de tamanho fixo, usar Tmin = Tmax e Nmin = Nmax
         // Use Tmin > 0 e Nmin > 0      For a fixed length threshold(T) or burstLength(N), use Tmin = Tmax and Nmin = Nmax

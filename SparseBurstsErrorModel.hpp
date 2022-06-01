@@ -33,6 +33,12 @@ public:
         this->Fmax = Fmax_;
     }
 
+    void printAttributes(){
+        std::cout << "Sparse Bursts Error Model: " << std::endl;
+        std::cout << "BOR: " << this->BOR << std::endl;
+        std::cout << "F: [" << this->Fmin << ", " << this->Fmax << "]" << std::endl;
+    }
+
     uint16_t injectErrors(Packet* packet, bool forceError) {
         uint16_t numberOfErrors = 0;
 

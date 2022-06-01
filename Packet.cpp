@@ -69,6 +69,8 @@ Packet::Packet(uint16_t len, bool zeroOrOne){
 
 void Packet::updateBuffers(){
     //std::cout << "updateBuffers called";
+    delete this->data16b;
+    delete this->data32b;
     this->data16b = (uint16_t*)char2BigEndian(2);
     this->data32b = (uint32_t*)char2BigEndian(4);
 }

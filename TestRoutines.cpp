@@ -136,62 +136,58 @@ void TestRoutines::burstVerification(ErrorModel *model, int N){
 	for (int x=0; x<20;++x) std::cout<<"["<<x<<"] = "<<diff[x]<<std::endl;
 }
 
-void TestRoutines::genericTest(ErrorModel *model, VerificationAlgorithm** algs, uint8_t len, bool forceError){
-	//std::cout << "Params: " << len;
-	uint32_t DFs[len]; //detection fail for each verifiation algorithm
+void TestRoutines::genericTest(VerificationAlgorithm** algs, ErrorModel** errs, uint8_t lenAlg, uint8_t lenErr, RNG* rng){
+	
+	for(uint8_t errCounter=0; errCounter<lenErr; errCounter++){
 
-	std::cout << "\nN(B)\tf(bit)\t%\t";
-	for(uint8_t i=0; i<len; i++) std::cout << algs[i]->getAlgName() << "\t";
-	std::cout << std::endl;
-
-	for (uint16_t N=pow(2,3); N<pow(2,11); N*=2){
-
-		for (uint8_t x=0; x<len; x++) 
-			DFs[x] = 0;
-
-		//std::cout << "Calculando para " << N << std::endl;
-		RNG *rng = new RNG(N);
-		uint16_t testsWithErrors = 0;
-		uint32_t bitErrors = 0;
-
-		for(uint32_t i=0; i<times; i++){
-			//std::cout << "Checkpoint";
-			//std::cout << "Pacote numero " << i << std::endl;
-			
-			Packet *pkg = new Packet(N, rng);
-
-			uint32_t chks[len]; //checksums before error injection
-
-
-			for(uint8_t algCounter=0; algCounter<len; algCounter++){
-				chks[algCounter] = algs[algCounter]->generateVerificationCode(pkg);
-			}
-			//std::cout << "packet before: ";
-			//pkg->print('h');
-
-			int err = model->injectErrors(pkg, forceError);
-			//std::cout << "packet after: ";
-			//pkg->print('h');
-
-			bitErrors += err;
-
-			if (err>0) testsWithErrors++;			
-
-			for(uint8_t algCounter=0; algCounter<len; algCounter++){
-				if(err>0 && (algs[algCounter]->generateVerificationCode(pkg) == chks[algCounter])){
-					//std::cout << algs[algCounter]->generateVerificationCode(pkg) << " == " << chks[algCounter] << std::endl;
-					DFs[algCounter]++;
-				}
-			}
-			
-			delete pkg;
-		}
-		std::cout << N << "\t"
-		<< FIXED_FLOAT(2, (double)bitErrors/times) << "\t"
-		<< FIXED_FLOAT(2, (((double)bitErrors/times)*100.0)/(N*8)) << "\t";
-		for(uint8_t i=0; i<len; i++) std::cout << DFs[i] << "\t";
 		std::cout << std::endl;
-		delete rng;
+		errs[errCounter]->printAttributes();
+
+		uint32_t DFs[lenAlg]; //detection fail for each verifiation algorithm
+
+		std::cout << "\nN(B)\tf(bit)\t%\t";
+		for(uint8_t i=0; i<lenAlg; i++) std::cout << algs[i]->getAlgName() << "\t";
+		std::cout << std::endl;
+
+		for (uint16_t N=pow(2,3); N<pow(2,11); N*=2){
+
+			for (uint8_t x=0; x<lenAlg; x++) 
+				DFs[x] = 0;
+
+			uint16_t testsWithErrors = 0;
+			uint32_t bitErrors = 0;
+
+			for(uint32_t i=0; i<times; i++){
+				
+				Packet *pkg = new Packet(N, rng);
+
+				uint32_t chks[lenAlg]; //checksums before error injection
+
+
+				for(uint8_t algCounter=0; algCounter<lenAlg; algCounter++){
+					chks[algCounter] = algs[algCounter]->generateVerificationCode(pkg);
+				}
+
+				int err = errs[errCounter]->injectErrors(pkg, true);
+
+				bitErrors += err;
+
+				if (err>0) testsWithErrors++;			
+
+				for(uint8_t algCounter=0; algCounter<lenAlg; algCounter++){
+					if(err>0 && (algs[algCounter]->generateVerificationCode(pkg) == chks[algCounter])){
+						DFs[algCounter]++;
+					}
+				}
+				
+				delete pkg;
+			}
+			std::cout << N << "\t"
+			<< FIXED_FLOAT(2, (double)bitErrors/times) << "\t"
+			<< FIXED_FLOAT(2, (((double)bitErrors/times)*100.0)/(N*8)) << "\t";
+			for(uint8_t i=0; i<lenAlg; i++) std::cout << DFs[i] << "\t";
+			std::cout << std::endl;
+		}
 	}
 }
 /*

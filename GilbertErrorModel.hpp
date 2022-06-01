@@ -24,6 +24,12 @@ public:
 	    this->plRate = plRate_;
 	    this->rng = rng_;
     }
+
+    void printAttributes(){
+        std::cout << "Gilbert Error Model: " << std::endl;
+        std::cout << "Average Burst Length: " << this->burst << std::endl;
+        std::cout << "Burst Occurrence Rate: " << this->plRate << std::endl;
+    }
      
     int getBurst() {
 	    return this->burst;
