@@ -7,6 +7,8 @@
 #define BAD_STATE true
 #define GOOD_STATE false
 
+#define FIXED_FLOAT(p, x) std::fixed << std::setprecision(p) <<(x)
+
 class GilbertErrorModel: public ErrorModel {
 
 private:
@@ -28,7 +30,7 @@ public:
     void printAttributes(){
         std::cout << "Gilbert Error Model: " << std::endl;
         std::cout << "Average Burst Length: " << this->burst << std::endl;
-        std::cout << "Burst Occurrence Rate: " << this->plRate << std::endl;
+        std::cout << "Burst Occurrence Rate: " << FIXED_FLOAT(5, this->plRate) << std::endl;
     }
      
     int getBurst() {

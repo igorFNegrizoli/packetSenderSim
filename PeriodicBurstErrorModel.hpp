@@ -1,6 +1,9 @@
 #include "ErrorModel.hpp"
 #include "Packet.hpp"
 #include <iostream>
+#include <iomanip>//setprecision setfixed
+
+#define FIXED_FLOAT(p, x) std::fixed << std::setprecision(p) <<(x)
 
 class PeriodicBurstErrorModel: public ErrorModel {
 

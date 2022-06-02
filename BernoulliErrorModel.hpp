@@ -1,6 +1,9 @@
 #include "ErrorModel.hpp"
 #include "Packet.hpp"
 #include <iostream>
+#include <iomanip>//setprecision setfixed
+
+#define FIXED_FLOAT(p, x) std::fixed << std::setprecision(p) <<(x)
 
 class BernoulliErrorModel: public ErrorModel {
 private:
@@ -20,7 +23,7 @@ public:
 
     void printAttributes(){
         std::cout << "Bernoulli Error Model: " << std::endl;
-        std::cout << "BER: " << this->BER << std::endl;
+        std::cout << "BER: " << FIXED_FLOAT(5, this->BER) << std::endl;
     }
 
     uint16_t injectErrors(Packet* packet, bool forceError) {

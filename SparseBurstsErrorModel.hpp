@@ -2,6 +2,9 @@
 #include "Packet.hpp"
 #include <iostream>
 #include <bitset>
+#include <iomanip>//setprecision setfixed
+
+#define FIXED_FLOAT(p, x) std::fixed << std::setprecision(p) <<(x)
 
 class SparseBurstsErrorModel: public ErrorModel {
 private:
@@ -35,7 +38,7 @@ public:
 
     void printAttributes(){
         std::cout << "Sparse Bursts Error Model: " << std::endl;
-        std::cout << "BOR: " << this->BOR << std::endl;
+        std::cout << "BOR: " << FIXED_FLOAT(5, this->BOR) << std::endl;
         std::cout << "F: [" << this->Fmin << ", " << this->Fmax << "]" << std::endl;
     }
 
