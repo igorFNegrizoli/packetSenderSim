@@ -3,7 +3,8 @@
 #include "CRC16Bit.hpp"
 #include "CRC32Bit.hpp"
 #include "FletcherAdler16Bit.hpp"
-#include "FletcherAdler32Bit.hpp"
+#include "Adler32Bit.hpp"
+#include "Fletcher32Bit.hpp"
 #include "Packet.hpp"
 #include "BernoulliErrorModel.hpp"
 #include "GilbertErrorModel.hpp"
@@ -23,19 +24,22 @@
 int main(){
 	
 	RNG* rng = new RNG(SEED);
-	VerificationAlgorithm *algs[10];
+	VerificationAlgorithm *algs[13];
 	ErrorModel *errs[21];
 	
 	algs[0] = new Checksum16Bit();
 	algs[1] = new Checksum32Bit();
 	algs[2] = new CRC16Bit(0x1021);
-	algs[3] = new CRC16Bit(0x8d95);
+	algs[3] = new CRC16Bit(0x8d95); //koopman
 	algs[4] = new CRC32Bit(0x04C11DB7);
-	algs[5] = new CRC32Bit(0xc9d204f5);
-	algs[6] = new CRC32Bit(0x973afb51);
-	algs[7] = new FletcherAdler32Bit(0,0,65535);
-	algs[8] = new FletcherAdler32Bit(0,0,65536);
-	algs[9] = new FletcherAdler32Bit(1,0,65521);
+	algs[5] = new CRC32Bit(0xc9d204f5); //koopman
+	algs[6] = new CRC32Bit(0x973afb51); //koopman
+	algs[7] = new FletcherAdler16Bit(0,0,255);
+	algs[8] = new FletcherAdler16Bit(0,0,256);
+	algs[9] = new FletcherAdler16Bit(1,0,251);
+	algs[10] = new Fletcher32Bit(true);
+	algs[11] = new Fletcher32Bit(false);
+	algs[12] = new Adler32Bit();
 
 	errs[0] = new SparseBurstsErrorModel(0.001, 2, 8, rng);
 	errs[1] = new SparseBurstsErrorModel(0.0001, 16, 32, rng);
@@ -60,8 +64,8 @@ int main(){
 	errs[20] = new PeriodicBurstErrorModel(16,32,128,256, rng);
 
 	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
-	test->genericTest(algs, errs, 10, 21, rng);
-	
+	test->genericTest(algs, errs, 13, 21, rng);
+
 	delete rng;
 	return 0;
 }
