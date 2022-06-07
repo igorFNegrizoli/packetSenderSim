@@ -2,7 +2,10 @@
 #include "Checksum32Bit.hpp"
 #include "CRC16Bit.hpp"
 #include "CRC32Bit.hpp"
-#include "FletcherAdler16Bit.hpp"
+
+#include "Fletcher16Bit.hpp"
+#include "Adler16Bit.hpp"
+
 #include "Adler32Bit.hpp"
 #include "Fletcher32Bit.hpp"
 #include "Packet.hpp"
@@ -34,9 +37,9 @@ int main(){
 	algs[4] = new CRC32Bit(0x04C11DB7);
 	algs[5] = new CRC32Bit(0xc9d204f5); //koopman
 	algs[6] = new CRC32Bit(0x973afb51); //koopman
-	algs[7] = new FletcherAdler16Bit(0,0,255);
-	algs[8] = new FletcherAdler16Bit(0,0,256);
-	algs[9] = new FletcherAdler16Bit(1,0,251);
+	algs[7] = new Fletcher16Bit(true);
+	algs[8] = new Fletcher16Bit(false);
+	algs[9] = new Adler16Bit();
 	algs[10] = new Fletcher32Bit(true);
 	algs[11] = new Fletcher32Bit(false);
 	algs[12] = new Adler32Bit();
