@@ -29,6 +29,7 @@ int main(){
 	RNG* rng = new RNG(SEED);
 	VerificationAlgorithm *algs[13];
 	ErrorModel *errs[21];
+	ErrorModel *errs2[5];
 	
 	algs[0] = new Checksum16Bit();
 	algs[1] = new Checksum32Bit();
@@ -66,8 +67,23 @@ int main(){
 	errs[19] = new PeriodicBurstErrorModel(8,16,32,64, rng);
 	errs[20] = new PeriodicBurstErrorModel(16,32,128,256, rng);
 
+	errs2[0] = new SparseBurstsErrorModel(0.0001, 32, 64, rng);
+	errs2[1] = new BernoulliErrorModel(0.0001, rng);
+	errs2[2] = new GilbertErrorModel(8, 0.0001, rng);
+	errs2[3] = new GilbertErrorModel(16, 0.0001, rng);
+	errs2[4] = new PeriodicBurstErrorModel(8,16,32,64, rng);
+
 	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
+
 	test->genericTest(algs, errs, 13, 21, rng);
+	std::cout << std::endl << std::endl;
+	test->compareTwoAlgorithms(errs2, 5, algs[1], algs[4], rng);
+	std::cout << std::endl << std::endl;
+	test->compareTwoAlgorithms(errs2, 5, algs[1], algs[10], rng);
+	std::cout << std::endl << std::endl;
+	test->compareTwoAlgorithms(errs2, 5, algs[1], algs[11], rng);
+	std::cout << std::endl << std::endl;
+	test->compareTwoAlgorithms(errs2, 5, algs[1], algs[12], rng);
 
 	delete rng;
 	return 0;

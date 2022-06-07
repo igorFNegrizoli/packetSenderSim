@@ -19,7 +19,7 @@ TestRoutines::TestRoutines(uint32_t times_, bool debug_){
 	this->debug = debug_;
 }
 
-void TestRoutines::compareTwoAlgorithms(ErrorModel **errs, VerificationAlgorithm* algA, VerificationAlgorithm* algB, RNG* rng){
+void TestRoutines::compareTwoAlgorithms(ErrorModel **errs, uint8_t lenErr, VerificationAlgorithm* algA, VerificationAlgorithm* algB, RNG* rng){
 	
 	for(uint8_t errCounter=0; errCounter<lenErr; errCounter++){
 		std::cout << std::endl;
@@ -42,7 +42,7 @@ void TestRoutines::compareTwoAlgorithms(ErrorModel **errs, VerificationAlgorithm
 				uint32_t verCodeA = algA->generateVerificationCode(pkg);
 				uint32_t verCodeB = algB->generateVerificationCode(pkg);
 				
-				int err = model->injectErrors(pkg, true);//true=forceError
+				int err = errs[errCounter]->injectErrors(pkg, true);//true=forceError
 				bitErrors =+ err;
 
 				bool algA_undetect = false;
