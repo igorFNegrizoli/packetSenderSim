@@ -19,66 +19,54 @@ TestRoutines::TestRoutines(uint32_t times_, bool debug_){
 	this->debug = debug_;
 }
 
-void TestRoutines::comparePolynomials32(ErrorModel *model, uint32_t polyA, uint32_t polyB){
-	int detectionFails[2]; //0 = PolyA, 1 = PolyB
-	int bitErrors; //para contar o numero de total bits invertidos
+void TestRoutines::compareTwoAlgorithms(ErrorModel **errs, uint8_t lenErr, VerificationAlgorithm* algA, VerificationAlgorithm* algB, RNG* rng){
 	
-	CRC32Bit crc32A(polyA);
-	CRC32Bit crc32B(polyB);
+	for(uint8_t errCounter=0; errCounter<lenErr; errCounter++){
+		std::cout << std::endl;
+		errs[errCounter]->printAttributes();
 
-	long diff[50];
-	int devpad[times];
-	for (int x = 0; x<20; ++x) diff[x]=0;
-	
-	std::cout << "\nN(B)\tf(bit)\tDesvPad\t%\t" << std::hex << polyA << "\t" << std::hex << polyB << " \tBOTH" << std::endl << std::dec;
-	for (int N=pow(2,3); N<pow(2,11); N*=2) {
-		detectionFails[0] = 0;
-		detectionFails[1] = 0;
-		bitErrors = 0;
-	RNG *rng = new RNG(N);
-	for (int i=0; i<times; ++i) devpad[i]=0;
+		int detectionFails[3]; //0 = PolyA, 1 = PolyB, 2 = BOTH
+		std::cout << "\nN(B)\tf(bit)\t%\t"
+		<< algA->getAlgName() << "\t"
+		<< algB->getAlgName() << "\t"
+		<< "BOTH" << std::endl;
+		for (uint16_t N=pow(2,3); N<pow(2,11); N*=2){
+			detectionFails[0] = 0;
+			detectionFails[1] = 0;
+			detectionFails[2] = 0;
+			uint32_t bitErrors = 0;
 
-	int both32Undetected = 0;
-	long testsWithErrors = 0; //execuções com erros injetados para cada cenario
-	for(int i=0; i<times; ++i){
-		Packet *pkg = new Packet(N, rng);
+			for(int i=0; i<times; ++i){
+				Packet *pkg = new Packet(N, rng);
 
-		uint32_t _crcA = crc32A.generateVerificationCode(pkg);
-		uint32_t _crcB = crc32B.generateVerificationCode(pkg);
-		
-		int err = model->injectErrors(pkg, true);//true=forceError
-		bitErrors+=err;
-		devpad[i] = err;
+				uint32_t verCodeA = algA->generateVerificationCode(pkg);
+				uint32_t verCodeB = algB->generateVerificationCode(pkg);
+				
+				int err = errs[errCounter]->injectErrors(pkg, true);//true=forceError
+				bitErrors =+ err;
 
-		bool crcA_undetect = false;
-		if (err>0 && crc32A.verifyCRC(pkg, _crcA)) {
-		    crcA_undetect = true;
-		    detectionFails[0]++;
-		} 		
-	        
-		if (err>0 && crc32B.verifyCRC(pkg, _crcB)) {
-		    if (crcA_undetect == true) both32Undetected++;                    
-		    detectionFails[1]++;
-		}		
-		delete pkg;
+				bool algA_undetect = false;
+				if (err>0 && verCodeA == algA->generateVerificationCode(pkg)) {
+					algA_undetect = true;
+					detectionFails[0]++;
+				} 		
+					
+				if (err>0 && verCodeB == algB->generateVerificationCode(pkg)) {
+					if (algA_undetect == true) detectionFails[2]++;                    
+					detectionFails[1]++;
+				}		
+				delete pkg;
+			}
+			std::cout << N << "\t"
+			<< FIXED_FLOAT(2, (double)bitErrors/times) << "\t"
+			<< FIXED_FLOAT(2, (((double)bitErrors/times)*100.0)/(N*8)) << "\t"
+			<< detectionFails[0] << "\t"
+			<< detectionFails[1] << "\t"
+			<< detectionFails[2];
+			std::cout << std::endl;
+
+		}
 	}
-	double errp = (double)bitErrors/times;
-	//desvio padrao
-	double sum = 0.0;
-	for (long x=0; x<times; ++x)
-	    sum+= pow(devpad[x]-errp, 2);
-	double dpad = sqrt(sum/times);
-
-	std::cout<<N<<"\t"
-    <<FIXED_FLOAT(2,errp)<<"\t" //media de bits invertidos
-	<<FIXED_FLOAT(2,dpad)<<"\t" //devpad
-    <<FIXED_FLOAT(4,(errp*100.0)/(N*8))<<"\t" //% bits invertidos no pacote
-    <<detectionFails[0]<<"\t"
-	<<detectionFails[1]<<"\t\t"
-	<<both32Undetected<<std::endl;
-        delete rng;
-	
-	}//end for N
 }
 
 void TestRoutines::executionTimeTest(RNG* rng, VerificationAlgorithm** algs, uint8_t lenAlg){
@@ -201,104 +189,3 @@ void TestRoutines::genericTest(VerificationAlgorithm** algs, ErrorModel** errs, 
 		}
 	}
 }
-/*
-void TestRoutines::paperTestTemplate(ErrorModel *model, uint32_t CRC_32, bool forceError) {
-	//int detectionFails[3]; //0=checksum, 1=crc 2=crc32 para contar o numero de falhas de detecção
-	unsigned int DF_checksum, DF_CRC16, DF_CRC32; //DF = Detection Fail
-	int bitErrors; //para contar o numero de total bits invertidos
-	
-	Checksum16Bit check;
-	CRC16Bit crc(0x1021);
-	CRC32Bit crc32(CRC_32);
-
-	//long diff[50];
-	int devpad[times];
-	//for (int x = 0; x<20; ++x) diff[x]=0;
-	
-	std::cout << "\nN(B)\tf(bit)\tDesvPad\t%\tFY\t%\tCHK\t%\tCRC16\t%\tBOTH\tCRC32\t%\tBOTH" << std::endl;
-	for (int N=pow(2,3); N<pow(2,11); N*=2) {
-		DF_checksum = 0;
-		DF_CRC16 = 0;
-		DF_CRC32 = 0;
-		bitErrors = 0;
-	RNG *rng = new RNG(N);
-	for (int i=0; i<times; ++i) devpad[i]=0;
-
-	int bothUndetected = 0, both32Undetected = 0; //numero de vezes que chk e crc falharam juntos
-	long testsWithErrors = 0; //execuções com erros injetados para cada cenario
-	for(int i=0; i<times; ++i){
-		Packet *pkg = new Packet(N, rng);
-		//pkg->print('b');
-
-
-		uint16_t _chk = check.generateVerificationCode(pkg);		
-		uint16_t _crc = crc.generateVerificationCode(pkg); 
-		uint32_t _crc32 = crc32.generateVerificationCode(pkg);
-		
-		int err = model->injectErrors(pkg, forceError);//true=forceError
-		bitErrors+=err;
-		devpad[i] = err;
-		if (err>0) {
-			testsWithErrors++;
-						
-		}
-                
-
-		if (debug) std::cout<<"err: "<<err<<std::endl;
-		bool chkUndetect = false;
-		if (err>0 && check.verifyChecksum(pkg, _chk)) {
-		   if (debug) {
-			std::cout << "CHK match - detection failed" << std::endl;
-		   	pkg->print('b');
-		   }
-		   chkUndetect = true;
-		   DF_checksum++;
-		} 		
-	        
-		if (err>0 && crc.verifyCRC(pkg, _crc)) {
-		   if (debug) {
-			std::cout << "CRC match - detection failed" << std::endl;
-			pkg->print('b');
-		   }
-           if (chkUndetect == true) bothUndetected++;
-		   DF_CRC16++;
-		}
-
-		if (err>0 && crc32.verifyCRC(pkg, _crc32)) {
-		   if (debug) {
-			std::cout << "CRC32 match - detection failed" << std::endl;
-			pkg->print('b');
-		   }
-		   if (chkUndetect == true) both32Undetected++;                    
-		   DF_CRC32++;
-		}		
-		delete pkg;
-	}
-	double errp = (double)bitErrors/times;
-	//desvio padrao
-	double sum = 0.0;
-	for (long x=0; x<times; ++x)
-	    sum+= pow(devpad[x]-errp, 2);
-	double dpad = sqrt(sum/times);
-
-	std::cout<<N<<"\t"
-    <<FIXED_FLOAT(2,errp)<<"\t" //media de bits invertidos
-	<<FIXED_FLOAT(2,dpad)<<"\t" //devpad
-    <<FIXED_FLOAT(4,(errp*100.0)/(N*8))<<"\t" //% bits invertidos no pacote
-	<<testsWithErrors<<"\t"
-	<<FIXED_FLOAT(2,(testsWithErrors*100.0)/times)<<"\t"
-    <<DF_checksum<<"\t"
-    <<FIXED_FLOAT(4,DF_checksum*100.0/testsWithErrors)<<"\t" //falhas de detecção checksum
-	<<DF_CRC16<<"\t"
-	<<FIXED_FLOAT(4,DF_CRC16*100.0/testsWithErrors)<<"\t"//falhas de detecção crc		
-	<<bothUndetected<<"\t"
-	<<DF_CRC32<<"\t"
-	<<FIXED_FLOAT(4,DF_CRC32*100.0/testsWithErrors)<<"\t"//falhas de detecção crc32
-	<<both32Undetected<<std::endl;
-    //for (int x=0; x<20;++x) cout<<"["<<x<<"] = "<<diff[x]<<endl;
-        delete rng;
-	
-	}//end for N
-		
-}
-*/
