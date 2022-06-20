@@ -78,10 +78,8 @@ int main(){
 	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
 
 	test->genericTest(algs, errs, 13, 21, rng);
-<<<<<<< HEAD
 	test->executionTimeTest(rng, algs, 13);
 	
-=======
 	std::cout << std::endl << std::endl;
 	test->compareTwoAlgorithms(errs2, 5, algs[1], algs[4], rng);
 	std::cout << std::endl << std::endl;
@@ -91,7 +89,7 @@ int main(){
 	std::cout << std::endl << std::endl;
 	test->compareTwoAlgorithms(errs2, 5, algs[1], algs[12], rng);
 
->>>>>>> f0d96f29dad2eb87b28e9022bb6bce39613a17a0
+
 	delete rng;
 	return 0;
 }
