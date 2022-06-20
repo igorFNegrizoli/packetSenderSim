@@ -81,22 +81,31 @@ void TestRoutines::comparePolynomials32(ErrorModel *model, uint32_t polyA, uint3
 	}//end for N
 }
 
-void TestRoutines::executionTimeTest(RNG* rng, VerificationAlgorithm* alg){
-	for (int N=pow(2,3); N<pow(2,11); N*=2){
-		long unsigned int mediaTempo = 0;
-		//std::chrono::high_resolution_clock mediaTempo;
+void TestRoutines::executionTimeTest(RNG* rng, VerificationAlgorithm** algs, uint8_t lenAlg){
 
-		for(uint32_t i=0; i<times; i++){
-			//if(i%50000 == 0) std::cout << "packet number: " << i << std::endl;
-			Packet *pkg = new Packet(N, rng);
-			auto start = std::chrono::high_resolution_clock::now();	
-			alg->generateVerificationCode(pkg);
-			auto stop = std::chrono::high_resolution_clock::now();
-			mediaTempo += std::chrono::duration_cast<std::chrono::microseconds>(stop-start).count();
-			//mediaTempo = mediaTempo + stop - start;
-			delete pkg;
+	for(uint8_t algCounter=0; algCounter<lenAlg; algCounter++){
+		std::cout << std::endl;
+		std::cout << algs[algCounter]->getAlgName();
+		std::cout << std::endl;
+
+		for (int N=pow(2,3); N<pow(2,11); N*=2){
+
+			long unsigned int mediaTempo = 0;
+			//std::chrono::high_resolution_clock mediaTempo;
+
+			for(uint32_t i=0; i<times; i++){
+				//if(i%50000 == 0) std::cout << "packet number: " << i << std::endl;
+				Packet *pkg = new Packet(N, rng);
+				auto start = std::chrono::high_resolution_clock::now();	
+				algs[algCounter]->generateVerificationCode(pkg);
+				auto stop = std::chrono::high_resolution_clock::now();
+				mediaTempo += std::chrono::duration_cast<std::chrono::microseconds>(stop-start).count();
+				//mediaTempo = mediaTempo + stop - start;
+				delete pkg;
+			}
+			std::cout << N << " - " << mediaTempo << std::endl;
 		}
-		std::cout << N << " - " << mediaTempo << std::endl;
+		std::cout << std::endl;
 	}
 }
 
@@ -175,7 +184,9 @@ void TestRoutines::genericTest(VerificationAlgorithm** algs, ErrorModel** errs, 
 				if (err>0) testsWithErrors++;			
 
 				for(uint8_t algCounter=0; algCounter<lenAlg; algCounter++){
-					if(err>0 && (algs[algCounter]->generateVerificationCode(pkg) == chks[algCounter])){
+					uint32_t newKey = algs[algCounter]->generateVerificationCode(pkg);
+					if(err>0 && (newKey == chks[algCounter])){
+						//std::cout << newKey << " == " << chks[algCounter] << std::endl;
 						DFs[algCounter]++;
 					}
 				}

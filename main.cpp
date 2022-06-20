@@ -41,6 +41,7 @@ int main(){
 	algs[11] = new Fletcher32Bit(false);
 	algs[12] = new Adler32Bit();
 
+	
 	errs[0] = new SparseBurstsErrorModel(0.001, 2, 8, rng);
 	errs[1] = new SparseBurstsErrorModel(0.0001, 16, 32, rng);
 	errs[2] = new SparseBurstsErrorModel(0.0001, 32, 64, rng);
@@ -62,10 +63,12 @@ int main(){
 	errs[18] = new PeriodicBurstErrorModel(1,3,16,16, rng);
 	errs[19] = new PeriodicBurstErrorModel(8,16,32,64, rng);
 	errs[20] = new PeriodicBurstErrorModel(16,32,128,256, rng);
+	
 
 	TestRoutines* test = new TestRoutines(TIMES, DEBUG);
 	test->genericTest(algs, errs, 13, 21, rng);
-
+	test->executionTimeTest(rng, algs, 13);
+	
 	delete rng;
 	return 0;
 }

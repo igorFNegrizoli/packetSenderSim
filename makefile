@@ -1,5 +1,5 @@
 all: 	
-	g++ -g *.cpp -o exec
+	g++ -g -O2 *.cpp -o exec
 	./exec
 
 clean:

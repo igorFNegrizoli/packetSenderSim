@@ -19,7 +19,9 @@ public:
         return (uint32_t) doChecksum(packet);
     }
     std::string getAlgName(){
-        return "FLAD16";
+        if(this->modulusVal == 255) return "1CFL16";
+        else if(this->modulusVal == 256) return "2CFL16";
+        else return "ADLR16";
     }
 };
 
