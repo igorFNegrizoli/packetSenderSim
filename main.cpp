@@ -1,19 +1,4 @@
-#include "Checksum16Bit.hpp"
-#include "Checksum32Bit.hpp"
-#include "CRC16Bit.hpp"
-#include "CRC32Bit.hpp"
-
-#include "Fletcher16Bit.hpp"
-#include "Adler16Bit.hpp"
-
-#include "Adler32Bit.hpp"
-#include "Fletcher32Bit.hpp"
-#include "Packet.hpp"
-#include "BernoulliErrorModel.hpp"
-#include "GilbertErrorModel.hpp"
-#include "PeriodicBurstErrorModel.hpp"
-#include "SparseBurstsErrorModel.hpp"
-#include "TestRoutines.hpp"
+#include "packetSenderSim.hpp"
 
 #include <iostream>
 #include <cmath>
