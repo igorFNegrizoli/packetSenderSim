@@ -1,16 +1,10 @@
 #include "packetSenderSim.hpp"
-
 #include <iostream>
-#include <cmath>
-#include <cstdint>
-#include <cstdlib>
-
 #define DEBUG false
 #define TIMES 1000000
 #define SEED 0x1234
 
 int main(){
-	
 	RNG* rng = new RNG(SEED);
 	VerificationAlgorithm *algs[13];
 	ErrorModel *errs[21];
@@ -29,7 +23,6 @@ int main(){
 	algs[10] = new Fletcher32Bit(true);
 	algs[11] = new Fletcher32Bit(false);
 	algs[12] = new Adler32Bit();
-
 	
 	errs[0] = new SparseBurstsErrorModel(0.001, 2, 8, rng);
 	errs[1] = new SparseBurstsErrorModel(0.0001, 16, 32, rng);
@@ -52,7 +45,6 @@ int main(){
 	errs[18] = new PeriodicBurstErrorModel(1,3,16,16, rng);
 	errs[19] = new PeriodicBurstErrorModel(8,16,32,64, rng);
 	errs[20] = new PeriodicBurstErrorModel(16,32,128,256, rng);
-	
 
 	errs2[0] = new SparseBurstsErrorModel(0.0001, 32, 64, rng);
 	errs2[1] = new BernoulliErrorModel(0.0001, rng);
@@ -73,7 +65,6 @@ int main(){
 	test->compareTwoAlgorithms(errs2, 5, algs[1], algs[11], rng);
 	std::cout << std::endl << std::endl;
 	test->compareTwoAlgorithms(errs2, 5, algs[1], algs[12], rng);
-
 
 	delete rng;
 	return 0;
