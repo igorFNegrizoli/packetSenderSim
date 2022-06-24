@@ -34,7 +34,7 @@ public:
         // Use Tmin > 0 e Nmin > 0      For a fixed length threshold(T) or burstLength(N), use Tmin = Tmax and Nmin = Nmax
         uint16_t i, pos;
         uint16_t threshold, eLength;
-        uint16_t numberOfErrors;
+        uint16_t numberOfErrors = 0;
 
         threshold = this->rng->next(Tmin, Tmax);
         eLength = this->rng->next(Nmin, Nmax);
