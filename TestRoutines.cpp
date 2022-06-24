@@ -43,7 +43,7 @@ void TestRoutines::compareTwoAlgorithms(ErrorModel **errs, uint8_t lenErr, Verif
 				uint32_t verCodeB = algB->generateVerificationCode(pkg);
 				
 				int err = errs[errCounter]->injectErrors(pkg, true);//true=forceError
-				bitErrors =+ err;
+				bitErrors += err;
 
 				bool algA_undetect = false;
 				if (err>0 && verCodeA == algA->generateVerificationCode(pkg)) {
