@@ -26,9 +26,9 @@ int main(){
 	
 	errs[0] = new SparseBurstsErrorModel(0.001, 2, 8, rng);
 	errs[1] = new SparseBurstsErrorModel(0.0001, 16, 32, rng);
-	errs[2] = new SparseBurstsErrorModel(0.0001, 32, 64, rng);
+	errs[2] = new SparseBurstsErrorModel(0.001, 32, 64, rng);
 	errs[3] = new SparseBurstsErrorModel(0.0001, 32, 64, rng);
-	errs[4] = new SparseBurstsErrorModel(0.0001, 64, 128, rng);
+	errs[4] = new SparseBurstsErrorModel(0.001, 64, 128, rng);
 	errs[5] = new SparseBurstsErrorModel(0.0001, 64, 128, rng);
 	errs[6] = new BernoulliErrorModel(0.01, rng);
 	errs[7] = new BernoulliErrorModel(0.001, rng);
