@@ -75,23 +75,26 @@ void TestRoutines::executionTimeTest(RNG* rng, VerificationAlgorithm** algs, uin
 		std::cout << std::endl;
 		std::cout << algs[algCounter]->getAlgName();
 		std::cout << std::endl;
+		std::cout << "N(B)" << "\t" << "Time(ms)" << std::endl;
 
 		for (int N=pow(2,3); N<pow(2,11); N*=2){
-
-			long unsigned int mediaTempo = 0;
+			unsigned int mediaTempo = 0;
 			//std::chrono::high_resolution_clock mediaTempo;
-
+			Packet *pkg = new Packet(N, rng);
+			
+			auto start = std::chrono::high_resolution_clock::now();
+			auto stop = std::chrono::high_resolution_clock::now();
 			for(uint32_t i=0; i<times; i++){
-				//if(i%50000 == 0) std::cout << "packet number: " << i << std::endl;
-				Packet *pkg = new Packet(N, rng);
-				auto start = std::chrono::high_resolution_clock::now();	
+				//Packet *pkg = new Packet(N, rng);
+				//start = std::chrono::high_resolution_clock::now();	
 				algs[algCounter]->generateVerificationCode(pkg);
-				auto stop = std::chrono::high_resolution_clock::now();
-				mediaTempo += std::chrono::duration_cast<std::chrono::microseconds>(stop-start).count();
-				//mediaTempo = mediaTempo + stop - start;
-				delete pkg;
+				//stop = std::chrono::high_resolution_clock::now();
+				//mediaTempo += std::chrono::duration_cast<std::chrono::milliseconds>(stop-start).count();
+				//delete pkg;
 			}
-			std::cout << N << " - " << mediaTempo << std::endl;
+			mediaTempo = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-start).count();
+			std::cout << N << "\t" << mediaTempo << std::endl;
+			delete pkg;
 		}
 		std::cout << std::endl;
 	}
